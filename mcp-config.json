@@ -15,12 +15,12 @@
     "version": "1.0.0",
     "description": "Cross-Chain Asset Bridge Agent using thirdweb - Bridge assets across multiple blockchain networks",
     "author": "ENVXX",
-    "homepage": "https://nullbridge.vercel.app",
+    "homepage": "https://null-bridge.vercel.app",
     "repository": {
       "type": "git",
       "url": "https://github.com/envexx/NullBridge.git"
     },
-    "serverUrl": "https://nullbridge.vercel.app/mcp"
+    "serverUrl": "https://null-bridge.vercel.app/mcp"
   },
   "tools": [
     {
@@ -102,9 +102,9 @@
       "name": "Base Sepolia"
     }
   ],
-  "features": [
+    "features": [
     "Cross-chain asset bridging",
-    "thirdweb REST API integration",
+    "thirdweb SDK integration",
     "Manual confirmation via redirect URL",
     "Multi-chain support",
     "Native token support"

@@ -10,4 +10,4 @@ export const baseURL =
           process.env.RAILWAY_STATIC_URL ||
           process.env.RENDER_EXTERNAL_URL ||
           process.env.NETLIFY_URL ||
-          "nullbridge.vercel.app");
+          "null-bridge.vercel.app");
