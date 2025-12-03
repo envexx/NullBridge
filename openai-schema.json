@@ -60,33 +60,6 @@
             }
           }
         }
-      },
-      "patch": {
-        "summary": "Update DeFi Action Status",
-        "description": "Update the status of a previously prepared DeFi action (e.g., after wallet signing)",
-        "operationId": "updateDeFiActionStatus",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActionStatusUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Updated action status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActionStatus"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/mcp/bridge-asset": {
@@ -111,64 +84,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BridgeAssetResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/mcp/transfer": {
-      "post": {
-        "summary": "Transfer Tokens",
-        "description": "Transfer tokens between wallets with fee estimation",
-        "operationId": "transferTokens",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TransferRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Transfer result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TransferResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/mcp/sign-request": {
-      "post": {
-        "summary": "Sign Transaction Request",
-        "description": "Generate transaction for wallet signing",
-        "operationId": "signTransactionRequest",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Transaction to sign",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignResponse"
                 }
               }
             }
