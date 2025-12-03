@@ -1,4 +1,4 @@
-// ENVXX MCP AURA - Next.js configuration for Smart Chatbot Onchain
+// NullBridge MCP - Next.js configuration for Cross-Chain Asset Bridge
 import type { NextConfig } from "next";
 import { baseURL } from "./baseUrl";
 
