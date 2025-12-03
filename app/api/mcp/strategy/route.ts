@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
       },
       timestamp: new Date().toISOString(),
       meta: {
-        source: 'AURA AdEx API',
+        source: 'NullBridge Bridge API',
         version: '1.0.0',
         totalStrategies: enrichedStrategies.strategies?.reduce(
           (acc, s) => acc + (s.response?.length || 0), 0

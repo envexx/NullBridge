@@ -125,7 +125,7 @@ function WalletConnectContent({ searchParams }: WalletConnectPageProps) {
               Action ID: <span className="font-mono text-emerald-300">{actionId}</span>
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              Secure connection powered by AppKit & ENVXX MCP AURA
+              Secure connection powered by AppKit & NullBridge MCP
             </p>
           </div>
         </div>

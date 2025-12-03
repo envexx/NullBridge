@@ -11,7 +11,7 @@ const mcpTools = [
     type: "function" as const,
     function: {
       name: "get_portfolio",
-      description: "Analyze DeFi portfolio across multiple blockchain networks using AURA API",
+      description: "Bridge assets across different blockchain networks using thirdweb",
       parameters: {
         type: "object",
         properties: {
@@ -38,7 +38,7 @@ const mcpTools = [
     type: "function" as const,
     function: {
       name: "get_strategy",
-      description: "Get AI-powered DeFi strategy recommendations using AURA API",
+      description: "Bridge assets across different blockchain networks using thirdweb",
       parameters: {
         type: "object",
         properties: {
@@ -200,18 +200,14 @@ export async function POST(request: NextRequest) {
     // Add system message about MCP tools and wallet context
     const systemMessage = {
       role: 'system',
-      content: `You are MCP AURA AI, an intelligent DeFi assistant powered by AURA API. This is the web application interface that directly uses OpenAI API with MCP tools integration.
+      content: `You are NullBridge AI, an intelligent cross-chain bridge assistant powered by thirdweb. This is the web application interface that directly uses OpenAI API with MCP tools integration.
 
 Available tools (accessible via function calling):
-- get_portfolio: Analyze wallet portfolio across multiple chains
-- get_strategy: Get personalized DeFi strategy recommendations
-- execute_action: Execute DeFi actions like swaps, stakes, etc.
-- transfer_tokens: Transfer tokens between wallets
-- estimate_fees: Estimate gas fees for transactions
+- bridge_asset: Bridge/swap assets across different blockchain networks using thirdweb
 
 ${walletAddress ? `User's connected wallet address: ${walletAddress}` : 'No wallet connected yet'}
 
-This web app provides direct access to AURA API through OpenAI function calling, giving you real-time DeFi insights and automation capabilities. Always be helpful, provide clear explanations, and suggest appropriate actions based on the user's portfolio and goals. When suggesting actions, explain the risks and potential returns.`
+This web app provides direct access to thirdweb bridge API through OpenAI function calling, giving you real-time cross-chain bridge capabilities. Always be helpful, provide clear explanations, and suggest appropriate bridge operations based on the user's needs. When suggesting bridge operations, explain the risks, fees, and estimated time for completion.`
     };
 
     const conversation = [systemMessage, ...messages];

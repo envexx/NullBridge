@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="text-xl text-gray-400">
-            ENVXX MCP AURA - Smart Chatbot Onchain
+            NullBridge MCP - Cross-Chain Asset Bridge
           </p>
           <p className="text-sm text-gray-500 mt-2">
             Last Updated: October 16, 2025 • Version 1.0.0
@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
           <section className="bg-gray-900 border border-gray-700 rounded-xl p-6">
             <h2 className="text-2xl font-semibold text-white mb-4">Overview</h2>
             <p className="text-gray-300 leading-relaxed">
-              ENVXX MCP AURA is committed to protecting your privacy while providing AI-powered DeFi portfolio management services. 
+              NullBridge MCP is committed to protecting your privacy while providing cross-chain asset bridge services. 
               This privacy policy explains how we handle data in our decentralized, non-custodial Web3 application.
             </p>
           </section>
@@ -165,7 +165,7 @@ export default function PrivacyPolicyPage() {
               <p className="text-gray-300">
                 <strong>Questions or Concerns:</strong> Contact us through our{" "}
                 <a 
-                  href="https://github.com/envexx/mcp-aura" 
+                  href="https://github.com/envexx/NullBridge" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 underline"
@@ -192,7 +192,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-black border border-gray-600 rounded-lg p-4">
               <code className="text-green-400 text-sm">
-                GET https://mcp-aura.vercel.app/api/privacy-policy
+                GET https://nullbridge.vercel.app/api/privacy-policy
               </code>
             </div>
           </section>

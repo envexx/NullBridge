@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Chatbot Onchain MCP AURA by ENVXX",
-  description: "AI-powered DeFi portfolio management with AURA API integration - Built by ENVXX for intelligent Web3 automation through ChatGPT",
+  title: "NullBridge MCP - Cross-Chain Asset Bridge",
+  description: "Cross-Chain Asset Bridge Agent using thirdweb - Bridge assets across multiple blockchain networks",
 };
 
 export default function RootLayout({

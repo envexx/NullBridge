@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
         requiresSignature: true,
         walletConnectionUrl: `${process.env.NODE_ENV === 'development' ?
           'http://localhost:3000' :
-          (process.env.NEXT_PUBLIC_BASE_URL || 'https://mcp-aura.vercel.app')
+          (process.env.NEXT_PUBLIC_BASE_URL || 'https://nullbridge.vercel.app')
         }/wallet?action=swap&fromToken=${encodeURIComponent(tokenIn)}&toToken=${encodeURIComponent(tokenOut)}&amount=${encodeURIComponent(amountIn)}&nonce=${encodeURIComponent(actionId)}`,
         metadata: {
           tokenIn,

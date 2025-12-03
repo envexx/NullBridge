@@ -88,7 +88,7 @@ export default function PortfolioPage() {
             Portfolio Analysis
           </h1>
           <p className="text-gray-600">
-            Comprehensive DeFi portfolio tracking powered by AURA
+            Cross-Chain Asset Bridge powered by thirdweb
           </p>
         </div>
 

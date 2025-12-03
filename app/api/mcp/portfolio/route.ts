@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`[MCP][Portfolio] Fetching portfolio for address: ${address}`);
-    // Fetch portfolio data from AURA API
+    // Note: Portfolio API is deprecated in NullBridge - focus is on cross-chain bridging
+    // This endpoint is kept for backward compatibility but may not be actively used
     const portfolio = await auraAPI.getPortfolio(address);
     console.log(`[MCP][Portfolio] Response summary: totalValue=${portfolio.totalValueUSD}, networks=${portfolio.networks.length}`);
 
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
       data: portfolio,
       timestamp: new Date().toISOString(),
       meta: {
-        source: 'AURA AdEx API',
+        source: 'NullBridge Bridge API',
         version: '1.0.0',
         cached: false
       }

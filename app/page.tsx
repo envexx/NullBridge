@@ -77,24 +77,20 @@ export default function Home() {
           
           <div className="text-center">
             <div className="flex items-center justify-center gap-4 mb-8">
-              <Image
-                src="/Aura.png"
-                alt="AURA Logo"
-                width={60}
-                height={60}
-                className="rounded-xl"
-              />
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">NB</span>
+              </div>
               <h1 className="text-6xl font-bold text-white tracking-tight">
-                MCP AURA
+                NULLBRIDGE
               </h1>
             </div>
             
             <div className="mb-6">
               <p className="text-2xl font-light text-gray-300 mb-2">
-                Smart Chatbot Onchain
+                Cross-Chain Asset Bridge
               </p>
               <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                AI-powered DeFi assistant for portfolio analysis and onchain automation
+                Bridge assets across multiple blockchain networks using thirdweb
               </p>
             </div>
 
@@ -162,7 +158,7 @@ export default function Home() {
               AI Strategy Recommendations
             </h3>
             <p className="text-gray-400 mb-4 flex-grow">
-              Get personalized DeFi strategies powered by AURA API with yield farming and cross-chain opportunities.
+              Bridge assets across chains with thirdweb infrastructure for seamless cross-chain operations.
             </p>
             <Link
               href="/strategy"
@@ -255,24 +251,8 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-white mb-4">Available Endpoints</h3>
               <div className="space-y-3 text-sm font-mono">
                 <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-white text-black rounded text-xs font-semibold">GET</span>
-                  <code className="text-gray-300">/api/mcp/portfolio</code>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-white text-black rounded text-xs font-semibold">GET</span>
-                  <code className="text-gray-300">/api/mcp/strategy</code>
-                </div>
-                <div className="flex items-center gap-3">
                   <span className="px-2 py-1 bg-gray-600 text-white rounded text-xs font-semibold">POST</span>
-                  <code className="text-gray-300">/api/mcp/action</code>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-gray-600 text-white rounded text-xs font-semibold">POST</span>
-                  <code className="text-gray-300">/api/mcp/transfer</code>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-gray-600 text-white rounded text-xs font-semibold">POST</span>
-                  <code className="text-gray-300">/api/mcp/sign-request</code>
+                  <code className="text-gray-300">/api/mcp/bridge-asset</code>
                 </div>
               </div>
             </div>
@@ -283,36 +263,8 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 bg-white rounded-full"></div>
                   <div>
-                    <code className="font-semibold text-white">get_portfolio</code>
-                    <span className="text-gray-400 ml-2">- Portfolio analysis</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div>
-                    <code className="font-semibold text-white">get_strategy</code>
-                    <span className="text-gray-400 ml-2">- Strategy recommendations</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div>
-                    <code className="font-semibold text-white">execute_action</code>
-                    <span className="text-gray-400 ml-2">- DeFi actions</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div>
-                    <code className="font-semibold text-white">transfer_tokens</code>
-                    <span className="text-gray-400 ml-2">- Token transfers</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div>
-                    <code className="font-semibold text-white">estimate_fees</code>
-                    <span className="text-gray-400 ml-2">- Gas estimation</span>
+                    <code className="font-semibold text-white">bridge_asset</code>
+                    <span className="text-gray-400 ml-2">- Cross-chain asset bridge</span>
                   </div>
                 </div>
               </div>
@@ -328,7 +280,7 @@ export default function Home() {
             Ready to Optimize Your DeFi Portfolio?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Connect your wallet and let AURA AI guide your DeFi journey
+            Connect your wallet and bridge assets across multiple blockchain networks
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -345,7 +297,7 @@ export default function Home() {
               Start Analysis
             </Link>
             <a
-              href="https://github.com/envexx/mcp-aura"
+              href="https://github.com/envexx/NullBridge"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-3 border-2 border-black text-black rounded-lg hover:bg-black hover:text-white transition-colors font-semibold flex items-center justify-center gap-2"
@@ -368,7 +320,7 @@ export default function Home() {
                 Privacy Policy
               </Link>
               <a 
-                href="https://github.com/envexx/mcp-aura" 
+                href="https://github.com/envexx/NullBridge" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -376,7 +328,7 @@ export default function Home() {
                 GitHub
               </a>
               <a 
-                href="https://mcp-aura.vercel.app/api/privacy-policy" 
+                href="https://nullbridge.vercel.app/api/privacy-policy" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"

@@ -1,4 +1,4 @@
-// ENVXX MCP AURA - Privacy Policy API Route
+// NullBridge MCP - Privacy Policy API Route
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -12,11 +12,11 @@ export async function GET() {
         organization: {
           name: "ENVXX",
           contact: "contact@envxx.com",
-          website: "https://github.com/envexx/mcp-aura"
+          website: "https://github.com/envexx/NullBridge"
         },
         policyDetails: {
           dataCollection: {
-            description: "We collect minimal data necessary for DeFi portfolio analysis and AI-powered recommendations",
+            description: "We collect minimal data necessary for cross-chain bridge operations and transaction processing",
             typesCollected: [
               "Wallet addresses (public blockchain data)",
               "Transaction history (public blockchain data)",
@@ -32,15 +32,15 @@ export async function GET() {
           },
           dataUsage: {
             purposes: [
-              "Portfolio analysis and DeFi position tracking",
-              "AI-powered strategy recommendations",
-              "Cross-chain opportunity identification",
+              "Cross-chain bridge transaction processing",
+              "Bridge route optimization",
+              "Transaction status tracking",
               "Service optimization and improvement",
               "Security monitoring and fraud prevention"
             ],
             aiProcessing: {
-              description: "We use AI to analyze portfolio data and provide personalized DeFi recommendations",
-              dataRetention: "Portfolio analysis data is processed in real-time and not permanently stored",
+              description: "We use thirdweb infrastructure to process cross-chain bridge transactions",
+              dataRetention: "Bridge transaction data is processed in real-time and not permanently stored",
               thirdPartyAI: "We may use third-party AI services for enhanced analysis while maintaining data privacy"
             }
           },

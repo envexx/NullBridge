@@ -498,7 +498,7 @@ export class Web3Utils {
     // This is a simplified WalletConnect URI generation
     // In production, use the official WalletConnect SDK
     const wcParams = {
-      topic: `mcp-aura-${Date.now()}`,
+      topic: `nullbridge-${Date.now()}`,
       version: '2',
       bridge: 'https://bridge.walletconnect.org',
       key: ethers.utils.hexlify(ethers.utils.randomBytes(32)),

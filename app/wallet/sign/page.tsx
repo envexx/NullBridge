@@ -357,7 +357,7 @@ function WalletSignContent({ searchParams }: WalletSignPageProps) {
               Action ID: <span className="font-mono">{actionId}</span>
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              Secure signing powered by RainbowKit & ENVXX MCP AURA
+              Secure signing powered by RainbowKit & NullBridge MCP
             </p>
           </div>
         </div>

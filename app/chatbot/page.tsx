@@ -41,7 +41,7 @@ export default function ChatbotPage() {
 
   const clearChatHistory = () => {
     setChatHistory([]);
-    localStorage.removeItem('mcp-aura-chat-history');
+    localStorage.removeItem('nullbridge-chat-history');
   };
 
   const fetchStrategies = async () => {
@@ -101,7 +101,7 @@ export default function ChatbotPage() {
 
   // Load chat history from localStorage on mount
   useEffect(() => {
-    const savedChats = localStorage.getItem('mcp-aura-chat-history');
+    const savedChats = localStorage.getItem('nullbridge-chat-history');
     if (savedChats) {
       try {
         const parsedChats = JSON.parse(savedChats);
@@ -120,7 +120,7 @@ export default function ChatbotPage() {
   // Save chat history to localStorage whenever it changes
   useEffect(() => {
     if (chatHistory.length > 0) {
-      localStorage.setItem('mcp-aura-chat-history', JSON.stringify(chatHistory));
+      localStorage.setItem('nullbridge-chat-history', JSON.stringify(chatHistory));
     }
   }, [chatHistory]);
 
@@ -312,12 +312,10 @@ export default function ChatbotPage() {
         <div className="p-4 border-b border-gray-800">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <img
-                src="/Aura.png"
-                alt="AURA Logo"
-                className="w-8 h-8 rounded-lg"
-              />
-              <h2 className="text-lg font-bold text-white">MCP AURA</h2>
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">NB</span>
+              </div>
+              <h2 className="text-lg font-bold text-white">NULLBRIDGE</h2>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -772,7 +770,7 @@ export default function ChatbotPage() {
               <div className="max-w-6xl mx-auto px-6 py-8">
                 <div className="text-center mb-8">
                   <h1 className="text-3xl font-bold text-white mb-4">AI Strategy Recommendations</h1>
-                  <p className="text-gray-400">Get personalized DeFi strategies powered by AURA API</p>
+                  <p className="text-gray-400">Bridge assets across multiple blockchain networks using thirdweb</p>
                 </div>
 
                 {!isConnected ? (

@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mainnet, sepolia } from 'wagmi/chains';
 
 export const config = getDefaultConfig({
-  appName: 'ENVXX MCP AURA',
+  appName: 'NullBridge MCP',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-walletconnect-project-id-for-testing',
   chains: [mainnet, sepolia],
   ssr: true,

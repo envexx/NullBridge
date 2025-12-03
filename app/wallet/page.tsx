@@ -812,7 +812,7 @@ Current URL: ${typeof window !== 'undefined' ? window.location.href : 'N/A'}`;
               Action ID: <span className="font-mono text-emerald-300">{actionId}</span>
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              Powered by AppKit & ENVXX MCP AURA
+              Powered by AppKit & NullBridge MCP
             </p>
           </div>
         </div>
