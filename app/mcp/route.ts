@@ -1,7 +1,7 @@
 import { baseURL } from "@/baseUrl";
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
-import { auraAPI } from "@/app/lib/aura-api";
+import { performCrossChainSwap, getChainById } from "@/app/lib/bridge-agent";
 
 const getAppsSdkCompatibleHtml = async (baseUrl: string, path: string) => {
   const result = await fetch(`${baseUrl}${path}`);
@@ -30,58 +30,7 @@ function widgetMeta(widget: ContentWidget) {
 }
 
 const handler = createMcpHandler(async (server) => {
-  // Portfolio Widget
-  const portfolioWidget: ContentWidget = {
-    id: "portfolio_analysis",
-    title: "Portfolio Analysis",
-    templateUri: "ui://widget/portfolio-template.html",
-    invoking: "Analyzing portfolio...",
-    invoked: "Portfolio loaded",
-    html: await getAppsSdkCompatibleHtml(baseURL, "/portfolio"),
-    description: "Displays comprehensive portfolio analysis with DeFi opportunities",
-    widgetDomain: "https://aura.adex.network",
-  };
-
-  // Strategy Widget
-  const strategyWidget: ContentWidget = {
-    id: "strategy_recommendations",
-    title: "DeFi Strategy Recommendations",
-    templateUri: "ui://widget/strategy-template.html",
-    invoking: "Generating strategies...",
-    invoked: "Strategies loaded",
-    html: await getAppsSdkCompatibleHtml(baseURL, "/strategy"),
-    description: "AI-powered DeFi strategy recommendations with actionable steps",
-    widgetDomain: "https://aura.adex.network",
-  };
-
-  // Register Portfolio Resource
-  server.registerResource(
-    "portfolio-widget",
-    portfolioWidget.templateUri,
-    {
-      title: portfolioWidget.title,
-      description: portfolioWidget.description,
-      mimeType: "text/html+skybridge",
-      _meta: {
-        "openai/widgetDescription": portfolioWidget.description,
-        "openai/widgetPrefersBorder": true,
-      },
-    },
-    async (uri) => ({
-      contents: [
-        {
-          uri: uri.href,
-          mimeType: "text/html+skybridge",
-          text: `<html>${portfolioWidget.html}</html>`,
-          _meta: {
-            "openai/widgetDescription": portfolioWidget.description,
-            "openai/widgetPrefersBorder": true,
-            "openai/widgetDomain": portfolioWidget.widgetDomain,
-          },
-        },
-      ],
-    })
-  );
+  // Note: Portfolio and Strategy widgets removed - NullBridge focuses on cross-chain bridging
 
   // Action Status Tool
   server.registerTool(
@@ -140,202 +89,129 @@ const handler = createMcpHandler(async (server) => {
     }
   );
 
-  // Register Strategy Resource
-  server.registerResource(
-    "strategy-widget",
-    strategyWidget.templateUri,
-    {
-      title: strategyWidget.title,
-      description: strategyWidget.description,
-      mimeType: "text/html+skybridge",
-      _meta: {
-        "openai/widgetDescription": strategyWidget.description,
-        "openai/widgetPrefersBorder": true,
-      },
-    },
-    async (uri) => ({
-      contents: [
-        {
-          uri: uri.href,
-          mimeType: "text/html+skybridge",
-          text: `<html>${strategyWidget.html}</html>`,
-          _meta: {
-            "openai/widgetDescription": strategyWidget.description,
-            "openai/widgetPrefersBorder": true,
-            "openai/widgetDomain": strategyWidget.widgetDomain,
-          },
-        },
-      ],
-    })
-  );
+  // Note: Strategy resource removed - NullBridge focuses on cross-chain bridging
 
-  // Portfolio Analysis Tool
+  // Note: Portfolio and Strategy tools removed - NullBridge focuses on cross-chain bridging
+
+  // Bridge Asset Tool (Cross-Chain Bridge using thirdweb)
   server.registerTool(
-    "get_portfolio",
+    "bridge_asset",
     {
-      title: "Get Portfolio Analysis",
-      description: "Analyze a wallet address to get portfolio breakdown, token balances, and DeFi positions across multiple chains",
+      title: "Bridge Asset Across Chains",
+      description: "Bridge/swap assets across different blockchain networks using thirdweb. Returns a confirmation URL for manual transaction confirmation.",
       inputSchema: {
-        address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Ethereum wallet address to analyze"),
-      },
-      _meta: widgetMeta(portfolioWidget),
-    },
-    async ({ address }) => {
-      try {
-        const portfolio = await auraAPI.getPortfolio(address);
-        
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Portfolio Analysis for ${address}:\n\nTotal Value: $${portfolio.totalValueUSD}\n\nAssets across ${portfolio.networks.length} networks:\n${portfolio.networks.map(n => `- ${n.network.name}: $${n.totalValueUSD}`).join('\n')}`,
-            },
-          ],
-          structuredContent: {
-            address,
-            portfolio,
-            timestamp: new Date().toISOString(),
-          },
-          _meta: widgetMeta(portfolioWidget),
-        };
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error analyzing portfolio: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            },
-          ],
-        };
-      }
-    }
-  );
-
-  // Strategy Recommendations Tool
-  server.registerTool(
-    "get_strategy",
-    {
-      title: "Get DeFi Strategy Recommendations",
-      description: "Get AI-powered DeFi strategy recommendations including yield farming, staking, and cross-chain opportunities",
-      inputSchema: {
-        address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Wallet address to analyze for strategies"),
-        riskLevel: z.enum(["low", "moderate", "high"]).optional().describe("Risk tolerance level"),
-        timeframe: z.enum(["1d", "7d", "30d", "90d"]).optional().describe("Investment timeframe"),
-      },
-      _meta: widgetMeta(strategyWidget),
-    },
-    async ({ address, riskLevel, timeframe }) => {
-      try {
-        const strategies = await auraAPI.getStrategies(address);
-        
-        const filteredStrategies = riskLevel 
-          ? strategies.strategies.map(s => ({
-              ...s,
-              response: s.response.filter(r => r.risk === riskLevel)
-            }))
-          : strategies.strategies;
-
-        const strategyText = filteredStrategies.map(s => 
-          s.response.map(r => 
-            `Strategy: ${r.name}\nRisk: ${r.risk}\nExpected Yield: ${r.expectedYield}\n\nActions:\n${r.actions.map(a => `- ${a.description} (APY: ${a.apy})`).join('\n')}`
-          ).join('\n\n')
-        ).join('\n\n');
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: `DeFi Strategy Recommendations for ${address}:\n\n${strategyText}`,
-            },
-          ],
-          structuredContent: {
-            address,
-            strategies: filteredStrategies,
-            filters: { riskLevel, timeframe },
-            timestamp: new Date().toISOString(),
-          },
-          _meta: widgetMeta(strategyWidget),
-        };
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error getting strategies: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            },
-          ],
-        };
-      }
-    }
-  );
-
-  // Execute Action Tool
-  server.registerTool(
-    "execute_action",
-    {
-      title: "Execute DeFi Action",
-      description: "Execute DeFi actions like swap, stake, or bridge tokens. Returns transaction details and wallet signature requirements.",
-      inputSchema: {
-        fromAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Wallet address executing the action"),
-        operation: z.enum(["swap", "stake", "bridge"]).describe("Type of DeFi operation"),
-        platform: z.string().describe("DeFi platform (e.g., Uniswap, Aave, Stargate)"),
-        tokenIn: z.string().describe("Input token symbol or address"),
-        tokenOut: z.string().describe("Output token symbol or address"),
-        amountIn: z.string().describe("Amount to swap/stake/bridge"),
-        network: z.enum(["ethereum", "polygon", "arbitrum", "optimism", "base", "bnb", "avalanche", "celo"]).describe("Blockchain network"),
-        slippage: z.string().optional().describe("Slippage tolerance (default: 0.5%)"),
+        fromChainId: z.number().describe("ID of the source chain (e.g., 42161 for Arbitrum, 8453 for Base)"),
+        toChainId: z.number().describe("ID of the destination chain (e.g., 8453 for Base, 42161 for Arbitrum)"),
+        fromTokenAddress: z.string().describe("Address of the token to swap from (use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE for native tokens)"),
+        toTokenAddress: z.string().describe("Address of the token to swap to"),
+        amount: z.string().describe("Amount of tokens to swap in human-readable format (e.g., '0.5', '1.0')"),
+        toAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe("Wallet address that will receive the assets"),
       },
     },
-    async ({ fromAddress, operation, platform, tokenIn, tokenOut, amountIn, network, slippage }) => {
+    async ({ fromChainId, toChainId, fromTokenAddress, toTokenAddress, amount, toAddress }) => {
       try {
-        const response = await fetch(`${baseURL}/api/mcp/action`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fromAddress,
-            operation,
-            platform,
-            tokenIn,
-            tokenOut,
-            amountIn,
-            network,
-            slippage: slippage || '0.5'
-          })
-        });
+        const fromChain = getChainById(fromChainId);
+        const toChain = getChainById(toChainId);
 
-        const result = await response.json();
-        
-        if (!result.success) {
-          throw new Error(result.error || 'Failed to prepare action');
+        if (!fromChain || !toChain) {
+          const supportedChains = [
+            { id: 1, name: "Ethereum Mainnet" },
+            { id: 10, name: "Optimism Mainnet" },
+            { id: 137, name: "Polygon Mainnet" },
+            { id: 42161, name: "Arbitrum One" },
+            { id: 8453, name: "Base Mainnet" },
+            { id: 421614, name: "Arbitrum Sepolia" },
+            { id: 84532, name: "Base Sepolia" },
+          ];
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ **Error: Unsupported Chain ID**
+
+From Chain ID ${fromChainId}: ${fromChain ? '✅ Supported' : '❌ Not Supported'}
+To Chain ID ${toChainId}: ${toChain ? '✅ Supported' : '❌ Not Supported'}
+
+**Supported Chains:**
+${supportedChains.map(c => `- ${c.name} (Chain ID: ${c.id})`).join('\n')}`,
+              },
+            ],
+            isError: true,
+          };
         }
 
-        const { data } = result;
-        
+        const result = await performCrossChainSwap(
+          fromChainId,
+          toChainId,
+          fromTokenAddress,
+          toTokenAddress,
+          amount,
+          toAddress
+        );
+
+        if (result.status === "pending_confirmation" && result.confirmationUrl) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `🔗 **Cross-Chain Bridge - Confirmation Required**
+
+Transaction Details:
+- From Chain: ${fromChain.name} (ID: ${fromChain.id})
+- To Chain: ${toChain.name} (ID: ${toChain.id})
+- From Token: ${fromTokenAddress}
+- To Token: ${toTokenAddress}
+- Amount: ${amount}
+${toAddress ? `- Recipient: ${toAddress}` : ''}
+
+Next Steps:
+1. Click the confirmation URL below to review and confirm the transaction
+2. Connect your wallet on the confirmation page
+3. Review the transaction details
+4. Confirm the swap transaction manually
+
+Confirmation URL:
+${result.confirmationUrl}
+
+⚠️ Important: You will be redirected to a confirmation page where you need to manually confirm the transaction using your wallet.`,
+              },
+            ],
+            structuredContent: {
+              status: "pending_confirmation",
+              confirmationUrl: result.confirmationUrl,
+              fromChain: fromChain.name,
+              toChain: toChain.name,
+              fromTokenAddress,
+              toTokenAddress,
+              amount,
+              toAddress,
+              timestamp: new Date().toISOString(),
+            },
+          };
+        } else {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ **Error: Failed to Prepare Swap Transaction**
+
+Details: ${result.error || 'Unknown error.'}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      } catch (error: any) {
+        console.error("Error handling bridge_asset tool:", error);
         return {
           content: [
             {
               type: "text",
-              text: `Action prepared: ${operation} ${amountIn} ${tokenIn} for ${tokenOut} on ${platform}\n\nEstimated Gas: ${data.estimatedFees.totalFeeETH} ETH ($${data.estimatedFees.totalFeeUSD})\nRisk Level: ${data.metadata.riskLevel}\n\nNext: User needs to sign transaction in wallet.`,
+              text: `❌ **Error during Bridge Asset operation:** ${error.message}`,
             },
           ],
-          structuredContent: {
-            actionId: data.actionId,
-            operation,
-            platform,
-            network,
-            estimatedFees: data.estimatedFees,
-            requiresSignature: true,
-            timestamp: new Date().toISOString(),
-          },
-        };
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error preparing action: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            },
-          ],
+          isError: true,
         };
       }
     }

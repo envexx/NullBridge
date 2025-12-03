@@ -1,18 +1,19 @@
 {
-  "name": "envxx-mcp-aura-smart-chatbot",
+  "name": "nullbridge-mcp",
   "version": "1.0.0",
   "private": true,
-  "description": "Smart Chatbot Onchain MCP AURA by ENVXX - AI-powered DeFi portfolio management",
+  "description": "NullBridge MCP - Cross-Chain Asset Bridge Agent using thirdweb",
   "author": "ENVXX",
   "keywords": [
     "mcp",
-    "aura",
-    "defi",
+    "nullbridge",
+    "thirdweb",
+    "bridge",
+    "cross-chain",
     "web3",
     "chatgpt",
     "ai",
-    "blockchain",
-    "portfolio"
+    "blockchain"
   ],
   "scripts": {
     "dev": "next dev --turbopack",

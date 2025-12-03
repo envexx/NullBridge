@@ -1,9 +1,7 @@
 <div align="center">
-  <img src="Aura.png" alt="ENVXX MCP AURA Logo" width="120" height="120">
-  <br>
-  <h1>Smart Chatbot Onchain</h1>
-  <h2>MCP AURA by ENVEXX</h2>
-  <p><em>AI-Powered DeFi Portfolio Management & Automation</em></p>
+  <h1>NullBridge MCP</h1>
+  <h2>Cross-Chain Asset Bridge Agent</h2>
+  <p><em>AI-Powered Cross-Chain Asset Bridging using thirdweb</em></p>
   <br>
   <p>
     <a href="#installation">Get Started</a> •
@@ -18,94 +16,56 @@
 
 ## 🚀 Overview
 
-**ENVEXX MCP AURA** is an advanced AI-powered DeFi assistant that integrates with ChatGPT through the Model Context Protocol (MCP). Built for intelligent Web3 portfolio management, it provides seamless DeFi operations across multiple blockchains with automated trading, yield farming, and portfolio analytics.
+**NullBridge MCP** is an advanced AI-powered cross-chain asset bridge agent that integrates with ChatGPT through the Model Context Protocol (MCP). Built for intelligent Web3 cross-chain operations, it provides seamless asset bridging across multiple blockchains using thirdweb infrastructure.
 
 ### ✨ Key Features
 
-- 🤖 **AI-Powered Chat Interface** - Natural language DeFi interactions
-- 📊 **Multi-Chain Portfolio Analysis** - Real-time holdings across Ethereum, Polygon, Arbitrum, and more
-- ⚡ **One-Click Execution** - Automated swaps, stakes, and transfers
-- 🎯 **Strategy Recommendations** - AI-driven yield farming and investment strategies
-- 🔒 **Non-Custodial Security** - User maintains full control of private keys
-- 🌐 **Cross-Chain Support** - Unified operations across major blockchains
+- 🌉 **Cross-Chain Bridging** - Bridge assets across Ethereum, Arbitrum, Base, Polygon, Optimism, and more
+- ⚡ **thirdweb Integration** - Powered by thirdweb REST API for reliable bridge infrastructure
+- 🔒 **Manual Confirmation** - Secure transaction confirmation via redirect URL
+- 🤖 **AI-Powered** - Natural language bridge interactions through ChatGPT
+- 🌐 **Multi-Chain Support** - Unified operations across 7+ blockchain networks
+- 💎 **Native Token Support** - Bridge native tokens (ETH, MATIC, etc.) using special address
 
 ### 🏗️ Architecture
 
 This project demonstrates the **OpenAI Apps SDK** integration with MCP server, featuring:
 - **Tool Registration** with ChatGPT-specific metadata
-- **Resource Registration** for iframe widget rendering
+- **Cross-Chain Bridge** functionality using thirdweb REST API
+- **Manual Confirmation Flow** via redirect URL
 - **Cross-Origin RSC** handling for seamless navigation
-- **Wallet Integration** with RainbowKit
 
 ## Key Components
 
 ### 1. MCP Server Route (`app/mcp/route.ts`)
 
-The core MCP server implementation that exposes tools and resources to ChatGPT.
+The core MCP server implementation that exposes the `bridge_asset` tool to ChatGPT.
 
 **Key features:**
 - **Tool registration** with OpenAI-specific metadata
-- **Resource registration** that serves HTML content for iframe rendering
-- **Cross-linking** between tools and resources via `templateUri`
+- **Bridge asset tool** for cross-chain transactions
+- **Confirmation URL generation** for manual transaction confirmation
 
-**OpenAI-specific metadata:**
-```typescript
-{
-  "openai/outputTemplate": widget.templateUri,      // Links to resource
-  "openai/toolInvocation/invoking": "Loading...",   // Loading state text
-  "openai/toolInvocation/invoked": "Loaded",        // Completion state text
-  "openai/widgetAccessible": false,                 // Widget visibility
-  "openai/resultCanProduceWidget": true            // Enable widget rendering
-}
-```
+### 2. Bridge Agent (`app/lib/bridge-agent.ts`)
 
-Full configuration options: [OpenAI Apps SDK MCP Documentation](https://developers.openai.com/apps-sdk/build/mcp-server)
+Core logic for performing cross-chain swaps using thirdweb REST API.
 
-### 2. Asset Configuration (`next.config.ts`)
+**Key functions:**
+- `performCrossChainSwap` - Prepares bridge transaction and returns confirmation URL
+- `executeConfirmedSwap` - Executes the bridge transaction after user confirmation
 
-**Critical:** Set `assetPrefix` to ensure `/_next/` static assets are fetched from the correct origin:
+### 3. thirdweb Bridge API (`app/lib/thirdweb-bridge-api.ts`)
 
-```typescript
-const nextConfig: NextConfig = {
-  assetPrefix: baseURL,  // Prevents 404s on /_next/ files in iframe
-};
-```
+Direct integration with thirdweb REST API for bridge operations.
 
-Without this, Next.js will attempt to load assets from the iframe's URL, causing 404 errors.
+**Key functions:**
+- `bridgeSwap` - Execute cross-chain swap via thirdweb API
+- `getBridgeChains` - Get supported chains
+- `getBridgeRoutes` - Get available bridge routes
 
-### 3. CORS Middleware (`middleware.ts`)
+### 4. Bridge Confirmation Page (`app/bridge/confirm/page.tsx`)
 
-Handles browser OPTIONS preflight requests required for cross-origin RSC (React Server Components) fetching during client-side navigation:
-
-```typescript
-export function middleware(request: NextRequest) {
-  if (request.method === "OPTIONS") {
-    // Return 204 with CORS headers
-  }
-  // Add CORS headers to all responses
-}
-```
-
-### 4. SDK Bootstrap (`app/layout.tsx`)
-
-The `<NextChatSDKBootstrap>` component patches browser APIs to work correctly within the ChatGPT iframe:
-
-**What it patches:**
-- `history.pushState` / `history.replaceState` - Prevents full-origin URLs in history
-- `window.fetch` - Rewrites same-origin requests to use the correct base URL
-- `<html>` attribute observer - Prevents ChatGPT from modifying the root element
-
-**Required configuration:**
-```tsx
-<html lang="en" suppressHydrationWarning>
-  <head>
-    <NextChatSDKBootstrap baseUrl={baseURL} />
-  </head>
-  <body>{children}</body>
-</html>
-```
-
-**Note:** `suppressHydrationWarning` is currently required because ChatGPT modifies the initial HTML before the Next.js app hydrates, causing hydration mismatches.
+Frontend page for manual transaction confirmation. Users review transaction details and confirm the bridge operation.
 
 ## 🛠️ Installation
 
@@ -113,13 +73,14 @@ The `<NextChatSDKBootstrap>` component patches browser APIs to work correctly wi
 - Node.js 18+
 - npm or pnpm
 - Git
+- thirdweb Client ID and Secret Key
 
 ### Quick Start
 
 ```bash
 # Clone the repository
-git clone https://github.com/envxx/mcp-aura.git
-cd mcp-aura
+git clone https://github.com/envexx/NullBridge.git
+cd NullBridge/mcp-aura
 
 # Install dependencies
 npm install
@@ -135,13 +96,12 @@ npm run dev
 Create a `.env.local` file with required API keys:
 
 ```env
-# AURA API Configuration
-AURA_API_KEY=your_aura_api_key
-AURA_API_SECRET=your_aura_api_secret
+# thirdweb Configuration
+THIRDWEB_CLIENT_ID=your_thirdweb_client_id
+THIRDWEB_SECRET_KEY=your_thirdweb_secret_key
 
-# Optional: Additional RPC endpoints
-ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_PROJECT_ID
-POLYGON_RPC_URL=https://polygon-mainnet.infura.io/v3/YOUR_PROJECT_ID
+# Optional: Base URL for production
+NEXT_PUBLIC_BASE_URL=https://your-domain.com
 ```
 
 ## 🔧 Configuration
@@ -155,32 +115,10 @@ http://localhost:3000/mcp
 
 ### Connecting from ChatGPT
 
-1. Deploy your ENVXX MCP AURA app to your preferred hosting platform
-2. In ChatGPT, navigate to **Settings → [Connectors](https://chatgpt.com/#settings/Connectors) → Create** and add your MCP server URL with the `/mcp` path (e.g., `https://your-mcp-aura-app.com/mcp`)
+1. Deploy your NullBridge app to your preferred hosting platform
+2. In ChatGPT, navigate to **Settings → [Connectors](https://chatgpt.com/#settings/Connectors) → Create** and add your MCP server URL with the `/mcp` path (e.g., `https://nullbridge.vercel.app/mcp`)
 
 **Note:** Connecting MCP servers to ChatGPT requires developer mode access. See the [connection guide](https://developers.openai.com/apps-sdk/deploy/connect-chatgpt) for setup instructions.
-
-
-## Project Structure
-
-```
-app/
-├── mcp/
-│   └── route.ts          # MCP server with tool/resource registration
-├── layout.tsx            # Root layout with SDK bootstrap
-├── page.tsx              # Homepage content
-└── globals.css           # Global styles
-middleware.ts             # CORS handling for RSC
-next.config.ts            # Asset prefix configuration
-```
-
-## How It Works
-
-1. **Tool Invocation**: ChatGPT calls a tool registered in `app/mcp/route.ts`
-2. **Resource Reference**: Tool response includes `templateUri` pointing to a registered resource
-3. **Widget Rendering**: ChatGPT fetches the resource HTML and renders it in an iframe
-4. **Client Hydration**: Next.js hydrates the app inside the iframe with patched APIs
-5. **Navigation**: Client-side navigation uses patched `fetch` to load RSC payloads
 
 ## 📡 API Endpoints
 
@@ -189,66 +127,42 @@ next.config.ts            # Asset prefix configuration
 https://your-deployment-url.vercel.app/api
 ```
 
-### 🔄 DeFi Actions
+### 🌉 Cross-Chain Bridge
 
-#### Execute Swap/Stake/Bridge
+#### Bridge Asset
 ```http
-POST /mcp/action
+POST /api/mcp/bridge-asset
 ```
 
 **Request:**
 ```json
 {
-  "fromAddress": "0xd3a12CA02256CD74AD8659974cfF36f62Aa0485c",
-  "action": "swap",
-  "fromToken": "ETH",
-  "toToken": "USDC",
-  "amount": "0.001",
-  "chain": "base",
-  "slippage": 0.01,
-  "platform": "Uniswap"
+  "fromChainId": 42161,
+  "toChainId": 8453,
+  "fromTokenAddress": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  "toTokenAddress": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  "amount": "0.1",
+  "toAddress": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4",
+  "confirmed": false
 }
 ```
 
-**Supported Actions:** `swap`, `stake`, `bridge`
-**Supported Chains:** `ethereum`, `polygon`, `arbitrum`, `optimism`, `base`, `bnb`, `avalanche`, `celo`
-
-### 📊 Portfolio Analysis
-
-#### Get Portfolio Data
-```http
-GET /mcp/portfolio?address={address}&chains={chains}
-```
-
-**Example:**
-```bash
-curl "https://api.envxx.dev/mcp/portfolio?address=0xd3a12CA02256CD74AD8659974cfF36f62Aa0485c&chains=ethereum,base"
-```
-
-### 🎯 Strategy Recommendations
-
-#### Get AI Strategies
-```http
-GET /mcp/strategy?address={address}&risk={risk}
-```
-
-**Risk Levels:** `low`, `medium`, `high`
-
-### 💸 Token Transfer
-
-#### Transfer Tokens
-```http
-POST /mcp/transfer
-```
-
-**Request:**
+**Response (Pending Confirmation):**
 ```json
 {
-  "fromAddress": "0x...",
-  "toAddress": "0x...",
-  "token": "USDC",
-  "amount": "100.0",
-  "chain": "ethereum"
+  "status": "pending_confirmation",
+  "message": "Please confirm the transaction via the confirmation URL.",
+  "confirmationUrl": "https://nullbridge.vercel.app/bridge/confirm?..."
+}
+```
+
+**Response (Success):**
+```json
+{
+  "status": "success",
+  "message": "Cross-chain swap initiated successfully.",
+  "transactionId": "tx_abc123",
+  "explorerUrl": "https://arbiscan.io/tx/0x1234..."
 }
 ```
 
@@ -256,7 +170,7 @@ POST /mcp/transfer
 
 ### One-Click Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/envxx/mcp-aura)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/envexx/NullBridge)
 
 ### Manual Deployment
 
@@ -279,26 +193,48 @@ netlify deploy --prod --dir .next
 Set these in your deployment platform:
 
 ```env
-AURA_API_KEY=your_api_key
-AURA_API_SECRET=your_api_secret
-NEXT_PUBLIC_APP_URL=https://your-domain.com
+THIRDWEB_CLIENT_ID=your_client_id
+THIRDWEB_SECRET_KEY=your_secret_key
+NEXT_PUBLIC_BASE_URL=https://your-domain.com
 ```
+
+## 📋 Supported Chains
+
+| Chain Name | Chain ID | Network Type |
+|------------|----------|--------------|
+| Ethereum | 1 | Mainnet |
+| Arbitrum | 42161 | Mainnet |
+| Base | 8453 | Mainnet |
+| Polygon | 137 | Mainnet |
+| Optimism | 10 | Mainnet |
+| Arbitrum Sepolia | 421614 | Testnet |
+| Base Sepolia | 84532 | Testnet |
+
+## 🔄 Usage Flow
+
+1. AI agent calls `bridge_asset` tool with bridge parameters
+2. System prepares transaction and returns confirmation URL
+3. User is redirected to confirmation page (`/bridge/confirm`)
+4. User reviews transaction details
+5. User manually confirms transaction
+6. Transaction is executed and submitted to blockchain via thirdweb
+7. User receives transaction hash and explorer URL
 
 ## 🆘 Support & Community
 
-- 📖 **Documentation**: [docs.envexx.dev/mcp-aura](https://docs.envexx.dev/mcp-aura)
+- 📖 **Documentation**: [docs.envexx.dev/nullbridge](https://docs.envexx.dev/nullbridge)
 - 💬 **Discord**: [discord.gg/envexx](https://discord.gg/envexx)
-- 🐛 **Issues**: [github.com/envexx/mcp-aura/issues](https://github.com/envexx/mcp-aura/issues)
+- 🐛 **Issues**: [github.com/envexx/NullBridge/issues](https://github.com/envexx/NullBridge/issues)
 - 📧 **Email**: support@envexx.dev
 
 ## 📄 License
 
-**ENVEXX MCP AURA** is built by ENVEXX for the decentralized future
+**NullBridge MCP** is built by ENVXX for the decentralized future
 
 ---
 
 <div align="center">
-  <p><strong>Built with ❤️ by ENVEXX Team</strong></p>
+  <p><strong>Built with ❤️ by ENVXX Team</strong></p>
   <p>
     <a href="https://envexx.dev">Website</a> •
     <a href="https://twitter.com/envexx">Twitter</a> •

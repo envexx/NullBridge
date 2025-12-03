@@ -1,4 +1,4 @@
-// ENVXX MCP AURA - Base URL configuration for deployment
+// NullBridge MCP - Base URL configuration for deployment
 export const baseURL =
   process.env.NODE_ENV == "development"
     ? "http://localhost:3000"
@@ -10,4 +10,4 @@ export const baseURL =
           process.env.RAILWAY_STATIC_URL ||
           process.env.RENDER_EXTERNAL_URL ||
           process.env.NETLIFY_URL ||
-          "your-mcp-aura-app.com");
+          "nullbridge.vercel.app");

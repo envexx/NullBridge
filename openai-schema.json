@@ -1,18 +1,18 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "ENVXX MCP AURA - Smart Chatbot Onchain",
-    "description": "AI-powered DeFi portfolio management with AURA API integration for intelligent Web3 automation",
+    "title": "NullBridge MCP - Cross-Chain Asset Bridge",
+    "description": "Cross-Chain Asset Bridge Agent using thirdweb - Bridge assets across multiple blockchain networks",
     "version": "1.0.0",
     "contact": {
       "name": "ENVXX",
-      "url": "https://github.com/envexx/mcp-aura"
+      "url": "https://github.com/envexx/NullBridge"
     }
   },
   "servers": [
     {
-      "url": "https://mcp-aura.vercel.app",
-      "description": "ENVXX MCP AURA Production Server"
+      "url": "https://nullbridge.vercel.app",
+      "description": "NullBridge MCP Production Server"
     }
   ],
   "paths": {
@@ -36,7 +36,7 @@
       },
       "post": {
         "summary": "Execute MCP Tools",
-        "description": "Execute MCP tools for AURA DeFi operations",
+        "description": "Execute MCP tools for cross-chain bridge operations using thirdweb",
         "operationId": "executeMCPTool",
         "requestBody": {
           "required": true,
@@ -89,117 +89,28 @@
         }
       }
     },
-    "/api/mcp/portfolio": {
-      "get": {
-        "summary": "Get Portfolio Analysis",
-        "description": "Analyze DeFi portfolio across multiple chains using AURA API",
-        "operationId": "getPortfolioAnalysis",
-        "parameters": [
-          {
-            "name": "address",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^0x[a-fA-F0-9]{40}$"
-            },
-            "description": "Wallet address to analyze"
-          },
-          {
-            "name": "chains",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": ["ethereum", "arbitrum", "polygon", "all"]
-            },
-            "description": "Blockchain networks to analyze"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Portfolio analysis results",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioAnalysis"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/mcp/strategy": {
-      "get": {
-        "summary": "Get DeFi Strategy Recommendations",
-        "description": "Get AI-powered DeFi strategy recommendations using AURA API",
-        "operationId": "getStrategyRecommendations",
-        "parameters": [
-          {
-            "name": "address",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^0x[a-fA-F0-9]{40}$"
-            },
-            "description": "Wallet address for strategy analysis"
-          },
-          {
-            "name": "risk_level",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": ["low", "medium", "high"]
-            },
-            "description": "Risk tolerance level"
-          },
-          {
-            "name": "strategy_type",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": ["yield_farming", "staking", "liquidity_provision", "arbitrage", "all"]
-            },
-            "description": "Type of DeFi strategy"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Strategy recommendations",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StrategyRecommendations"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/mcp/action": {
+    "/api/mcp/bridge-asset": {
       "post": {
-        "summary": "Execute DeFi Action",
-        "description": "Execute DeFi actions like swaps, stakes, or transfers",
-        "operationId": "executeDeFiAction",
+        "summary": "Bridge Asset Across Chains",
+        "description": "Bridge/swap assets across different blockchain networks using thirdweb. Returns a confirmation URL for manual transaction confirmation.",
+        "operationId": "bridgeAsset",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DeFiActionRequest"
+                "$ref": "#/components/schemas/BridgeAssetRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Action execution result",
+            "description": "Bridge transaction result",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ActionResult"
+                  "$ref": "#/components/schemas/BridgeAssetResponse"
                 }
               }
             }
@@ -273,7 +184,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "ENVXX MCP AURA"
+            "example": "NullBridge MCP"
           },
           "version": {
             "type": "string",
@@ -281,14 +192,14 @@
           },
           "description": {
             "type": "string",
-            "example": "Smart Chatbot Onchain MCP AURA by ENVXX"
+            "example": "Cross-Chain Asset Bridge Agent using thirdweb"
           },
           "tools": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "example": ["get_portfolio", "get_strategy", "execute_action", "transfer_tokens", "estimate_fees"]
+            "example": ["bridge_asset"]
           }
         }
       },
@@ -338,506 +249,87 @@
           }
         }
       },
-      "PortfolioAnalysis": {
+      "BridgeAssetRequest": {
         "type": "object",
         "properties": {
-          "address": {
-            "type": "string",
-            "example": "0x742d35Cc6634C0532925a3b8D8C9C8C8C8C8C8C8"
-          },
-          "totalValue": {
+          "fromChainId": {
             "type": "number",
-            "example": 15420.50
+            "description": "ID of the source chain (e.g., 42161 for Arbitrum, 8453 for Base, 1 for Ethereum)",
+            "example": 42161
           },
-          "chains": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "ethereum"
-                },
-                "value": {
-                  "type": "number",
-                  "example": 8500.25
-                },
-                "tokens": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "symbol": {
-                        "type": "string",
-                        "example": "ETH"
-                      },
-                      "balance": {
-                        "type": "number",
-                        "example": 2.5
-                      },
-                      "value": {
-                        "type": "number",
-                        "example": 5000.00
-                      }
-                    }
-                  }
-                }
-              }
-            }
+          "toChainId": {
+            "type": "number",
+            "description": "ID of the destination chain (e.g., 8453 for Base, 42161 for Arbitrum, 1 for Ethereum)",
+            "example": 8453
           },
-          "defiPositions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "protocol": {
-                  "type": "string",
-                  "example": "Uniswap V3"
-                },
-                "type": {
-                  "type": "string",
-                  "example": "liquidity_provision"
-                },
-                "value": {
-                  "type": "number",
-                  "example": 1200.00
-                },
-                "apy": {
-                  "type": "number",
-                  "example": 12.5
-                }
-              }
-            }
-          }
-        }
-      },
-      "StrategyRecommendations": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string"
-          },
-          "strategies": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "example": "aura-yield-eth-usdc"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "ETH-USDC Yield Farming"
-                },
-                "protocol": {
-                  "type": "string",
-                  "example": "Aave"
-                },
-                "apy": {
-                  "type": "number",
-                  "example": 8.5
-                },
-                "risk": {
-                  "type": "string",
-                  "enum": ["low", "medium", "high"],
-                  "example": "medium"
-                },
-                "tvl": {
-                  "type": "number",
-                  "example": 50000000
-                },
-                "description": {
-                  "type": "string",
-                  "example": "Provide liquidity to ETH-USDC pool on Aave for stable yield"
-                },
-                "actions": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "step": {
-                        "type": "number"
-                      },
-                      "action": {
-                        "type": "string"
-                      },
-                      "amount": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "DeFiActionRequest": {
-        "type": "object",
-        "properties": {
-          "fromAddress": {
+          "fromTokenAddress": {
             "type": "string",
-            "pattern": "^0x[a-fA-F0-9]{40}$",
-            "description": "Sender wallet address (optional, uses default if not provided)",
-            "example": "0x01C229f4bDb7552b564619554C8a805aE4Ca2ADB"
+            "description": "Address of the token to swap from (use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE for native tokens like ETH, MATIC)",
+            "example": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
           },
-          "action": {
+          "toTokenAddress": {
             "type": "string",
-            "enum": ["swap", "stake", "bridge"],
-            "description": "Type of DeFi action to perform",
-            "example": "swap"
-          },
-          "fromToken": {
-            "type": "string",
-            "description": "Input token symbol or address",
-            "example": "ETH"
-          },
-          "toToken": {
-            "type": "string",
-            "description": "Output token symbol or address",
-            "example": "USDT"
+            "description": "Address of the token to swap to",
+            "example": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
           },
           "amount": {
             "type": "string",
-            "description": "Amount to swap/stake/bridge",
-            "example": "0.01"
-          },
-          "slippage": {
-            "type": "number",
-            "description": "Slippage tolerance in percentage (0.5 = 0.5%)",
-            "example": 0.5,
-            "default": 0.5
-          },
-          "chain": {
-            "type": "string",
-            "enum": ["ethereum", "polygon", "arbitrum", "optimism", "base", "bnb", "avalanche", "celo"],
-            "description": "Blockchain network",
-            "example": "base"
-          },
-          "platform": {
-            "type": "string",
-            "description": "DeFi platform to use (optional, defaults to Uniswap for swaps)",
-            "example": "Uniswap",
-            "default": "Uniswap"
-          },
-          "deadline": {
-            "type": "number",
-            "description": "Transaction deadline in seconds from now (optional, defaults to 30 minutes)",
-            "example": 1800
-          }
-        },
-        "required": ["action", "fromToken", "toToken", "amount", "chain"]
-      },
-      "ActionResult": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Whether the action was prepared successfully",
-            "example": true
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "actionId": {
-                "type": "string",
-                "description": "Unique identifier for tracking the action",
-                "example": "action_1634567890123_abc123def"
-              },
-              "operation": {
-                "type": "string",
-                "description": "The operation type performed",
-                "example": "swap"
-              },
-              "platform": {
-                "type": "string",
-                "description": "DeFi platform used",
-                "example": "Uniswap"
-              },
-              "network": {
-                "type": "string",
-                "description": "Blockchain network",
-                "example": "ethereum"
-              },
-              "transactionRequest": {
-                "type": "object",
-                "description": "Prepared transaction data ready for signing",
-                "properties": {
-                  "to": {
-                    "type": "string",
-                    "description": "Contract address to send transaction to",
-                    "example": "0xE592427A0AEce92De3Edee1F18E0157C05861564"
-                  },
-                  "value": {
-                    "type": "string",
-                    "description": "ETH value to send (in wei)",
-                    "example": "10000000000000000"
-                  },
-                  "data": {
-                    "type": "string",
-                    "description": "Encoded function call data",
-                    "example": "0x414bf389..."
-                  }
-                }
-              },
-              "estimatedFees": {
-                "type": "object",
-                "description": "Gas fee estimates",
-                "properties": {
-                  "gasLimit": {
-                    "type": "string",
-                    "example": "200000"
-                  },
-                  "gasPrice": {
-                    "type": "string",
-                    "example": "20000000000"
-                  },
-                  "totalFeeETH": {
-                    "type": "string",
-                    "example": "0.004"
-                  },
-                  "totalFeeUSD": {
-                    "type": "string",
-                    "example": "8.50"
-                  }
-                }
-              },
-              "status": {
-                "type": "string",
-                "description": "Action status",
-                "example": "prepared"
-              },
-              "requiresSignature": {
-                "type": "boolean",
-                "description": "Whether the transaction requires user signature",
-                "example": true
-              },
-              "metadata": {
-                "type": "object",
-                "description": "Additional action metadata",
-                "properties": {
-                  "tokenIn": {
-                    "type": "string",
-                    "example": "ETH"
-                  },
-                  "tokenOut": {
-                    "type": "string",
-                    "example": "USDT"
-                  },
-                  "amountIn": {
-                    "type": "string",
-                    "example": "0.01"
-                  },
-                  "slippage": {
-                    "type": "string",
-                    "example": "0.5"
-                  },
-                  "deadline": {
-                    "type": "number",
-                    "example": 1634567890
-                  },
-                  "estimatedTime": {
-                    "type": "string",
-                    "example": "2-5 minutes"
-                  },
-                  "riskLevel": {
-                    "type": "string",
-                    "enum": ["low", "moderate", "high"],
-                    "example": "low"
-                  }
-                }
-              }
-            }
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Response timestamp",
-            "example": "2023-10-18T10:30:00.000Z"
-          }
-        }
-      },
-      "ActionStatusUpdate": {
-        "type": "object",
-        "properties": {
-          "actionId": {
-            "type": "string",
-            "description": "Identifier of the action to update",
-            "example": "action_1634567890123_abc123def"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "prepared",
-              "pending_signature",
-              "submitted",
-              "confirming",
-              "confirmed",
-              "failed",
-              "cancelled"
-            ],
-            "description": "New status for the action",
-            "example": "confirmed"
-          },
-          "txHash": {
-            "type": "string",
-            "description": "Transaction hash if available",
-            "example": "0xabc123"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message if the action failed"
-          },
-          "metadata": {
-            "type": "object",
-            "description": "Additional metadata about the status update",
-            "additionalProperties": true
-          }
-        },
-        "required": ["actionId", "status"]
-      },
-      "ActionStatus": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "example": true
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "actionId": {
-                "type": "string"
-              },
-              "status": {
-                "type": "string"
-              },
-              "txHash": {
-                "type": ["string", "null"]
-              },
-              "error": {
-                "type": ["string", "null"]
-              },
-              "metadata": {
-                "type": ["object", "null"],
-                "additionalProperties": true
-              },
-              "history": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "txHash": {
-                      "type": ["string", "null"]
-                    },
-                    "error": {
-                      "type": ["string", "null"]
-                    },
-                    "metadata": {
-                      "type": ["object", "null"],
-                      "additionalProperties": true
-                    }
-                  }
-                }
-              },
-              "updatedAt": {
-                "type": "string",
-                "format": "date-time"
-              }
-            }
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "TransferRequest": {
-        "type": "object",
-        "properties": {
-          "fromAddress": {
-            "type": "string",
-            "pattern": "^0x[a-fA-F0-9]{40}$"
+            "description": "Amount of tokens to swap in human-readable format (e.g., '0.5', '1.0')",
+            "example": "0.1"
           },
           "toAddress": {
             "type": "string",
-            "pattern": "^0x[a-fA-F0-9]{40}$"
+            "pattern": "^0x[a-fA-F0-9]{40}$",
+            "description": "Wallet address that will receive the assets (optional)",
+            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
           },
-          "token": {
-            "type": "string",
-            "example": "USDC"
-          },
-          "amount": {
-            "type": "string",
-            "example": "100.0"
-          },
-          "chain": {
-            "type": "string",
-            "example": "ethereum"
+          "confirmed": {
+            "type": "boolean",
+            "description": "Whether the transaction is confirmed (default: false, returns confirmation URL)",
+            "example": false,
+            "default": false
           }
-        }
+        },
+        "required": ["fromChainId", "toChainId", "fromTokenAddress", "toTokenAddress", "amount"]
       },
-      "TransferResult": {
+      "BridgeAssetResponse": {
         "type": "object",
         "properties": {
-          "success": {
-            "type": "boolean"
+          "status": {
+            "type": "string",
+            "enum": ["pending_confirmation", "success", "failed"],
+            "description": "Status of the bridge transaction",
+            "example": "pending_confirmation"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable message about the transaction status",
+            "example": "Please confirm the transaction via the confirmation URL."
+          },
+          "confirmationUrl": {
+            "type": "string",
+            "description": "URL for manual transaction confirmation (only when status is pending_confirmation)",
+            "example": "https://nullbridge.vercel.app/bridge/confirm?fromChainId=42161&toChainId=8453&..."
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction ID from thirdweb (only when status is success)",
+            "example": "tx_abc123"
           },
           "transactionHash": {
-            "type": "string"
+            "type": "string",
+            "description": "Blockchain transaction hash (only when status is success)",
+            "example": "0x1234567890abcdef..."
           },
-          "estimatedGas": {
-            "type": "number"
+          "explorerUrl": {
+            "type": "string",
+            "description": "URL to view transaction on blockchain explorer (only when status is success)",
+            "example": "https://arbiscan.io/tx/0x1234..."
           },
-          "gasFee": {
-            "type": "number"
-          }
-        }
-      },
-      "SignRequest": {
-        "type": "object",
-        "properties": {
-          "transaction": {
-            "type": "object",
-            "properties": {
-              "to": {
-                "type": "string"
-              },
-              "value": {
-                "type": "string"
-              },
-              "data": {
-                "type": "string"
-              },
-              "gasLimit": {
-                "type": "string"
-              },
-              "gasPrice": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      },
-      "SignResponse": {
-        "type": "object",
-        "properties": {
-          "transaction": {
-            "type": "object"
-          },
-          "signature": {
-            "type": "string"
-          },
-          "hash": {
-            "type": "string"
+          "error": {
+            "type": "string",
+            "description": "Error message (only when status is failed)",
+            "example": "Insufficient balance for transaction"
           }
         }
       }
