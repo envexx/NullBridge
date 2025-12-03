@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { baseURL } from '@/baseUrl';
 import { getChainById } from '@/app/lib/bridge-agent';
@@ -14,7 +14,7 @@ interface SwapConfirmationProps {
   toAddress?: string;
 }
 
-export default function BridgeConfirmPage() {
+function BridgeConfirmContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -172,6 +172,23 @@ export default function BridgeConfirmPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BridgeConfirmPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <BridgeConfirmContent />
+    </Suspense>
   );
 }
 
