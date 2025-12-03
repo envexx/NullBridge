@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch strategy data from AURA API
+    // Note: Strategy API is deprecated in NullBridge - focus is on cross-chain bridging
+    // This endpoint is kept for backward compatibility but may not be actively used
     console.log(`[MCP][Strategy] Fetching strategies for address: ${address}`);
     const strategies = await auraAPI.getStrategies(address);
     console.log(`[MCP][Strategy] Response summary: strategyGroups=${strategies.strategies?.length ?? 0}`);
