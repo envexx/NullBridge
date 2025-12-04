@@ -45,17 +45,6 @@ export async function performCrossChainSwap(
       throw new Error(`Unsupported chain ID: fromChainId ${fromChainId} or toChainId ${toChainId}`);
     }
 
-    // Get available bridge routes
-    const routes = await Bridge.routes({
-      client: thirdwebClient,
-      originChainId: fromChainId,
-      destinationChainId: toChainId,
-    });
-
-    if (!routes || routes.length === 0) {
-      throw new Error(`No bridge routes available from chain ${fromChainId} to chain ${toChainId}`);
-    }
-
     // Get quote for the bridge transaction
     // Convert amount to wei (18 decimals for native tokens)
     const amountWei = BigInt(Math.floor(parseFloat(amount) * 10**18));
@@ -63,9 +52,9 @@ export async function performCrossChainSwap(
       client: thirdwebClient,
       originChainId: fromChainId,
       destinationChainId: toChainId,
-      originTokenAddress: fromTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : fromTokenAddress,
-      destinationTokenAddress: toTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : toTokenAddress,
-      amountWei: amountWei,
+      originTokenAddress: (fromTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : fromTokenAddress) as `0x${string}`,
+      destinationTokenAddress: (toTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : toTokenAddress) as `0x${string}`,
+      amount: amountWei,
     });
 
     // Generate confirmation URL for manual confirmation
@@ -104,7 +93,7 @@ export async function executeConfirmedSwap(
   toTokenAddress: string,
   amount: string,
   toAddress?: string
-): Promise<{ status: string; transactionId?: string; transactionHash?: string; error?: string; steps?: any[] }> {
+): Promise<{ status: string; transactionId?: string; transactionHash?: string; error?: string; steps?: any[]; transactions?: any[] }> {
   try {
     const fromChain = getChainById(fromChainId);
     const toChain = getChainById(toChainId);
@@ -116,24 +105,36 @@ export async function executeConfirmedSwap(
     // Convert amount to wei (18 decimals for native tokens)
     const amountWei = BigInt(Math.floor(parseFloat(amount) * 10**18));
 
+    if (!toAddress) {
+      throw new Error("toAddress is required for preparing bridge transaction");
+    }
+
     // Prepare bridge transaction
-    const { steps } = await Bridge.Buy.prepare({
+    const preparedQuote = await Bridge.Buy.prepare({
       client: thirdwebClient,
-      sender: toAddress || "", // Will be set by user's wallet on confirmation page
-      receiver: toAddress || "", // Recipient address
+      sender: toAddress as `0x${string}`, // Will be set by user's wallet on confirmation page
+      receiver: toAddress as `0x${string}`, // Recipient address
       originChainId: fromChainId,
       destinationChainId: toChainId,
-      originTokenAddress: fromTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : fromTokenAddress,
-      destinationTokenAddress: toTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : toTokenAddress,
-      amountWei: amountWei,
+      originTokenAddress: (fromTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : fromTokenAddress) as `0x${string}`,
+      destinationTokenAddress: (toTokenAddress === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN_ADDRESS : toTokenAddress) as `0x${string}`,
+      amount: amountWei,
     });
+
+    // Extract steps from prepared quote
+    const steps = preparedQuote.steps;
 
     // Return steps for frontend to execute
     // Each step will be executed by user's wallet on confirmation page
+    // Extract transactions from steps
+    const transactions = steps.flatMap(step => step.transactions || []);
+    const lastTransaction = transactions[transactions.length - 1];
+    
     return {
       status: "prepared",
       steps: steps,
-      transactionId: steps[steps.length - 1]?.transaction?.hash || undefined,
+      transactions: transactions,
+      transactionId: lastTransaction?.id || undefined,
     };
 
   } catch (error) {

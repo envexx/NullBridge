@@ -3,6 +3,7 @@ import { baseURL } from "@/baseUrl";
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import { performCrossChainSwap, getChainById } from "@/app/lib/bridge-agent";
+import { getPortfolio, getWalletTokenBalance, getChainById as getPortfolioChainById } from "@/app/lib/portfolio-agent";
 
 const handler = createMcpHandler(async (server: any) => {
   // Bridge Asset Tool - Cross-Chain Bridge using thirdweb SDK
@@ -135,6 +136,177 @@ Details: ${result.error || 'Unknown error.'}`,
       }
     }
   );
+
+  // Get Portfolio Tool - Check wallet balances using thirdweb SDK
+  server.registerTool(
+    "get_portfolio",
+    {
+      title: "Get Wallet Portfolio",
+      description: "Get wallet balances (native tokens and ERC20 tokens) across multiple chains using thirdweb SDK.",
+      inputSchema: {
+        address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Wallet address to check balances for"),
+        chainIds: z.array(z.number()).optional().describe("Array of chain IDs to check (e.g., [1, 137, 8453]). If not provided, checks all supported chains"),
+        tokenAddresses: z.record(z.array(z.string())).optional().describe("Optional: Object mapping chainId to array of ERC20 token addresses to check (e.g., {1: ['0x...', '0x...'], 137: ['0x...']})"),
+      },
+    },
+    async ({ address, chainIds, tokenAddresses }: {
+      address: string;
+      chainIds?: number[];
+      tokenAddresses?: { [chainId: number]: string[] };
+    }) => {
+      try {
+        // Default to all supported chains if not specified
+        const chainsToCheck = chainIds || [1, 10, 137, 42161, 8453, 421614, 84532];
+
+        const result = await getPortfolio(address, chainsToCheck, tokenAddresses);
+
+        if (result.error && result.balances.length === 0) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ **Error: Failed to Get Portfolio**\n\nDetails: ${result.error}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+
+        // Format balances for display
+        const balanceText = result.balances
+          .map(balance => {
+            const chainName = balance.chainName || `Chain ${balance.chainId}`;
+            const tokenName = balance.name || balance.symbol;
+            return `- **${chainName}**: ${balance.displayValue} ${balance.symbol}${balance.address !== "native" ? ` (${tokenName})` : ""}`;
+          })
+          .join("\n");
+
+        const errorText = result.error ? `\n\n⚠️ **Warnings:**\n${result.error}` : "";
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `💰 **Wallet Portfolio**\n\n**Address:** ${address}\n\n**Balances:**\n${balanceText || "No balances found"}${errorText}`,
+            },
+          ],
+          structuredContent: {
+            address: result.address,
+            balances: result.balances,
+            totalChains: chainsToCheck.length,
+            chainsChecked: chainsToCheck,
+            errors: result.error ? [result.error] : [],
+            timestamp: new Date().toISOString(),
+          },
+        };
+      } catch (error: any) {
+        console.error("Error handling get_portfolio tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `❌ **Error during Portfolio Check:** ${error.message}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+  );
+
+  // Get Wallet Balance Tool - Check single token balance on a specific chain
+  server.registerTool(
+    "get_wallet_balance",
+    {
+      title: "Get Wallet Balance",
+      description: "Get wallet balance for a specific token (native or ERC20) on a specific chain using thirdweb SDK.",
+      inputSchema: {
+        address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Wallet address to check balance for"),
+        chainId: z.number().describe("Chain ID to check balance on (e.g., 1 for Ethereum, 137 for Polygon, 8453 for Base)"),
+        tokenAddress: z.string().optional().describe("Optional: ERC20 token address. If not provided, returns native token balance (ETH, MATIC, etc.)"),
+      },
+    },
+    async ({ address, chainId, tokenAddress }: {
+      address: string;
+      chainId: number;
+      tokenAddress?: string;
+    }) => {
+      try {
+        const chainInfo = getPortfolioChainById(chainId);
+
+        if (!chainInfo) {
+          const supportedChains = [
+            { id: 1, name: "Ethereum Mainnet" },
+            { id: 10, name: "Optimism Mainnet" },
+            { id: 137, name: "Polygon Mainnet" },
+            { id: 42161, name: "Arbitrum One" },
+            { id: 8453, name: "Base Mainnet" },
+            { id: 421614, name: "Arbitrum Sepolia" },
+            { id: 84532, name: "Base Sepolia" },
+          ];
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ **Error: Unsupported Chain ID**\n\nChain ID ${chainId} is not supported.\n\n**Supported Chains:**\n${supportedChains.map(c => `- ${c.name} (Chain ID: ${c.id})`).join('\n')}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+
+        const result = await getWalletTokenBalance(address, chainId, tokenAddress);
+
+        if (result.error || !result.balance) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ **Error: Failed to Get Balance**\n\nDetails: ${result.error || 'Unknown error'}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+
+        const balance = result.balance;
+        const tokenType = tokenAddress ? "ERC20 Token" : "Native Token";
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `💰 **Wallet Balance**\n\n**Address:** ${address}\n**Chain:** ${balance.chainName} (ID: ${balance.chainId})\n**Token:** ${balance.name} (${balance.symbol})\n**Type:** ${tokenType}\n**Balance:** ${balance.displayValue} ${balance.symbol}`,
+            },
+          ],
+          structuredContent: {
+            address,
+            chainId: balance.chainId,
+            chainName: balance.chainName,
+            tokenAddress: balance.address,
+            tokenName: balance.name,
+            tokenSymbol: balance.symbol,
+            balance: balance.displayValue,
+            value: balance.value.toString(),
+            decimals: balance.decimals,
+            timestamp: new Date().toISOString(),
+          },
+        };
+      } catch (error: any) {
+        console.error("Error handling get_wallet_balance tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `❌ **Error during Balance Check:** ${error.message}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+  );
 });
 
 // GET handler - Return server info
@@ -144,7 +316,7 @@ export async function GET() {
       name: "NullBridge MCP",
       version: "1.0.0",
       description: "Cross-Chain Asset Bridge Agent with thirdweb SDK integration for AI agents",
-      tools: ["bridge_asset"],
+      tools: ["bridge_asset", "get_portfolio", "get_wallet_balance"],
       supported_chains: [
         { id: 1, name: "Ethereum Mainnet" },
         { id: 10, name: "Optimism Mainnet" },

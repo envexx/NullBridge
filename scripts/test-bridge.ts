@@ -15,35 +15,17 @@ const TEST_CONFIG = {
   testAddress: "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
 };
 
-async function testBridgeRoutes() {
-  console.log('\n🧪 Test 1: Bridge.routes()');
-  try {
-    const routes = await Bridge.routes({
-      client: thirdwebClient,
-      originChainId: TEST_CONFIG.fromChainId,
-      destinationChainId: TEST_CONFIG.toChainId,
-    });
-    
-    console.log('✅ Bridge.routes() berhasil');
-    console.log(`   Found ${routes?.length || 0} routes`);
-    return true;
-  } catch (error: any) {
-    console.log('❌ Bridge.routes() gagal:', error.message);
-    return false;
-  }
-}
-
 async function testBridgeQuote() {
-  console.log('\n🧪 Test 2: Bridge.Buy.quote()');
+  console.log('\n🧪 Test 1: Bridge.Buy.quote()');
   try {
     const amountWei = BigInt(Math.floor(parseFloat(TEST_CONFIG.amount) * 10**18));
     const quote = await Bridge.Buy.quote({
       client: thirdwebClient,
       originChainId: TEST_CONFIG.fromChainId,
       destinationChainId: TEST_CONFIG.toChainId,
-      originTokenAddress: NATIVE_TOKEN_ADDRESS,
-      destinationTokenAddress: NATIVE_TOKEN_ADDRESS,
-      amountWei: amountWei,
+      originTokenAddress: NATIVE_TOKEN_ADDRESS as `0x${string}`,
+      destinationTokenAddress: NATIVE_TOKEN_ADDRESS as `0x${string}`,
+      amount: amountWei,
     });
     
     console.log('✅ Bridge.Buy.quote() berhasil');
@@ -51,6 +33,30 @@ async function testBridgeQuote() {
     return true;
   } catch (error: any) {
     console.log('❌ Bridge.Buy.quote() gagal:', error.message);
+    return false;
+  }
+}
+
+async function testBridgePrepare() {
+  console.log('\n🧪 Test 2: Bridge.Buy.prepare()');
+  try {
+    const amountWei = BigInt(Math.floor(parseFloat(TEST_CONFIG.amount) * 10**18));
+    const prepared = await Bridge.Buy.prepare({
+      client: thirdwebClient,
+      originChainId: TEST_CONFIG.fromChainId,
+      destinationChainId: TEST_CONFIG.toChainId,
+      originTokenAddress: NATIVE_TOKEN_ADDRESS as `0x${string}`,
+      destinationTokenAddress: NATIVE_TOKEN_ADDRESS as `0x${string}`,
+      sender: TEST_CONFIG.testAddress as `0x${string}`,
+      receiver: TEST_CONFIG.testAddress as `0x${string}`,
+      amount: amountWei,
+    });
+    
+    console.log('✅ Bridge.Buy.prepare() berhasil');
+    console.log(`   Steps: ${prepared.steps?.length || 0}`);
+    return true;
+  } catch (error: any) {
+    console.log('❌ Bridge.Buy.prepare() gagal:', error.message);
     return false;
   }
 }
@@ -125,8 +131,8 @@ async function runAllTests() {
   console.log(`- Token: Native (ETH)`);
   
   const results = {
-    routes: await testBridgeRoutes(),
     quote: await testBridgeQuote(),
+    prepare: await testBridgePrepare(),
     performSwap: await testPerformCrossChainSwap(),
     getChain: await testGetChainById(),
     client: await testThirdwebClient(),

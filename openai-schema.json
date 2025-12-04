@@ -114,7 +114,7 @@
             "items": {
               "type": "string"
             },
-            "example": ["bridge_asset"]
+            "example": ["bridge_asset", "get_portfolio", "get_wallet_balance"]
           }
         }
       },
@@ -245,6 +245,174 @@
             "type": "string",
             "description": "Error message (only when status is failed)",
             "example": "Insufficient balance for transaction"
+          }
+        }
+      },
+      "GetPortfolioRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address to check balances for",
+            "pattern": "^0x[a-fA-F0-9]{40}$",
+            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
+          },
+          "chainIds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Array of chain IDs to check (e.g., [1, 137, 8453]). If not provided, checks all supported chains",
+            "example": [1, 137, 8453]
+          },
+          "tokenAddresses": {
+            "type": "object",
+            "description": "Optional: Object mapping chainId to array of ERC20 token addresses to check",
+            "example": {
+              "1": ["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"],
+              "137": ["0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"]
+            }
+          }
+        },
+        "required": ["address"]
+      },
+      "GetPortfolioResponse": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address that was checked",
+            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
+          },
+          "balances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "description": "Token address (native for native tokens)",
+                  "example": "native"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Token name",
+                  "example": "Ethereum"
+                },
+                "symbol": {
+                  "type": "string",
+                  "description": "Token symbol",
+                  "example": "ETH"
+                },
+                "decimals": {
+                  "type": "number",
+                  "description": "Token decimals",
+                  "example": 18
+                },
+                "displayValue": {
+                  "type": "string",
+                  "description": "Human-readable balance",
+                  "example": "1.5"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Balance in wei (as string)",
+                  "example": "1500000000000000000"
+                },
+                "chainId": {
+                  "type": "number",
+                  "description": "Chain ID",
+                  "example": 1
+                },
+                "chainName": {
+                  "type": "string",
+                  "description": "Chain name",
+                  "example": "Ethereum Mainnet"
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if any",
+            "example": "Failed to fetch balance for chain 1"
+          }
+        }
+      },
+      "GetWalletBalanceRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address to check balance for",
+            "pattern": "^0x[a-fA-F0-9]{40}$",
+            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
+          },
+          "chainId": {
+            "type": "number",
+            "description": "Chain ID to check balance on",
+            "example": 1
+          },
+          "tokenAddress": {
+            "type": "string",
+            "description": "Optional: ERC20 token address. If not provided, returns native token balance",
+            "example": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+          }
+        },
+        "required": ["address", "chainId"]
+      },
+      "GetWalletBalanceResponse": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address that was checked",
+            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
+          },
+          "chainId": {
+            "type": "number",
+            "description": "Chain ID",
+            "example": 1
+          },
+          "chainName": {
+            "type": "string",
+            "description": "Chain name",
+            "example": "Ethereum Mainnet"
+          },
+          "tokenAddress": {
+            "type": "string",
+            "description": "Token address (native for native tokens)",
+            "example": "native"
+          },
+          "tokenName": {
+            "type": "string",
+            "description": "Token name",
+            "example": "Ethereum"
+          },
+          "tokenSymbol": {
+            "type": "string",
+            "description": "Token symbol",
+            "example": "ETH"
+          },
+          "balance": {
+            "type": "string",
+            "description": "Human-readable balance",
+            "example": "1.5"
+          },
+          "value": {
+            "type": "string",
+            "description": "Balance in wei (as string)",
+            "example": "1500000000000000000"
+          },
+          "decimals": {
+            "type": "number",
+            "description": "Token decimals",
+            "example": 18
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if any",
+            "example": "Failed to fetch balance"
           }
         }
       }
