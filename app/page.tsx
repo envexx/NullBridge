@@ -324,7 +324,7 @@ export default function Home() {
                 GitHub
               </a>
               <a 
-                href="https://nullbridge.vercel.app/api/privacy-policy" 
+                href="https://null-bridge.vercel.app/api/privacy-policy" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"

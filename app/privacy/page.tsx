@@ -192,7 +192,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-black border border-gray-600 rounded-lg p-4">
               <code className="text-green-400 text-sm">
-                GET https://nullbridge.vercel.app/api/privacy-policy
+                GET https://null-bridge.vercel.app/api/privacy-policy
               </code>
             </div>
           </section>
