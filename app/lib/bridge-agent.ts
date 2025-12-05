@@ -36,11 +36,11 @@ export async function performCrossChainSwap(
   toTokenAddress: string,
   amount: string,
   toAddress?: string
-): Promise<{ status: string; transactionId?: string; error?: string; confirmationUrl?: string; quote?: any }> {
-  try {
-    const fromChain = getChainById(fromChainId);
-    const toChain = getChainById(toChainId);
+): Promise<{ status: string; transactionId?: string; error?: string; confirmationUrl?: string; quote?: any; details?: any }> {
+  const fromChain = getChainById(fromChainId);
+  const toChain = getChainById(toChainId);
 
+  try {
     if (!fromChain || !toChain) {
       throw new Error(`Unsupported chain ID: fromChainId ${fromChainId} or toChainId ${toChainId}`);
     }
