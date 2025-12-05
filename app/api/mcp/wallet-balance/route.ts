@@ -133,15 +133,19 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       status: "success",
-      walletAddress: walletAddr,
-      chainId: balance.chainId,
-      chainName: balance.chainName,
-      tokenAddress: balance.address,
-      tokenName: balance.name,
-      tokenSymbol: balance.symbol,
-      balance: balance.displayValue,
-      value: balance.value.toString(),
-      decimals: balance.decimals,
+      message: `Wallet balance retrieved successfully for ${walletAddr} on ${chainInfo.name}`,
+      data: {
+        walletAddress: walletAddr,
+        chainId: balance.chainId,
+        chainName: balance.chainName,
+        tokenAddress: balance.address,
+        tokenName: balance.name,
+        tokenSymbol: balance.symbol,
+        balance: balance.displayValue,
+        balanceFormatted: `${balance.displayValue} ${balance.symbol}`,
+        value: balance.value.toString(),
+        decimals: balance.decimals,
+      },
       timestamp: new Date().toISOString(),
     }, {
       status: 200,

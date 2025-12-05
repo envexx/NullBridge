@@ -280,18 +280,101 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "example": "success"
+                      "example": "success",
+                      "description": "Response status"
                     },
-                    "walletAddress": {
+                    "message": {
+                      "type": "string",
+                      "example": "Wallet balance retrieved successfully for 0x... on Ethereum Mainnet",
+                      "description": "Human-readable message"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "walletAddress": {
+                          "type": "string",
+                          "example": "0xebf3e11713079039b2cfba51a4dba8092e1480b6",
+                          "description": "Wallet address that was checked"
+                        },
+                        "chainId": {
+                          "type": "number",
+                          "example": 1,
+                          "description": "Chain ID"
+                        },
+                        "chainName": {
+                          "type": "string",
+                          "example": "Ethereum Mainnet",
+                          "description": "Chain name"
+                        },
+                        "tokenSymbol": {
+                          "type": "string",
+                          "example": "ETH",
+                          "description": "Token symbol"
+                        },
+                        "tokenName": {
+                          "type": "string",
+                          "example": "Ethereum",
+                          "description": "Token name"
+                        },
+                        "balance": {
+                          "type": "string",
+                          "example": "1.5",
+                          "description": "Balance in human-readable format"
+                        },
+                        "balanceFormatted": {
+                          "type": "string",
+                          "example": "1.5 ETH",
+                          "description": "Formatted balance with symbol"
+                        },
+                        "value": {
+                          "type": "string",
+                          "example": "1500000000000000000",
+                          "description": "Balance in wei (raw value)"
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Response timestamp"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "failed"
+                    },
+                    "error": {
                       "type": "string"
-                    },
-                    "balance": {
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
                       "type": "string",
-                      "example": "1.5"
+                      "example": "failed"
                     },
-                    "tokenSymbol": {
-                      "type": "string",
-                      "example": "ETH"
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
