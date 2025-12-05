@@ -15,33 +15,302 @@
       "get": {
         "description": "Get MCP server information and available tools",
         "operationId": "getMCPInfo",
-        "deprecated": false
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "MCP server information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "NullBridge MCP"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tools": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["bridge_asset", "get_portfolio", "get_wallet_balance"]
+                    },
+                    "supported_chains": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "post": {
         "description": "Execute MCP tools for cross-chain bridge operations and portfolio checking using thirdweb",
         "operationId": "executeMCPTool",
-        "deprecated": false
+        "deprecated": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "example": "tools/call"
+                  },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "arguments": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "MCP tool execution result"
+          }
+        }
       }
     },
     "/api/mcp/bridge-asset": {
       "post": {
         "description": "Bridge/swap assets across different blockchain networks using thirdweb. Returns a confirmation URL for manual transaction confirmation.",
         "operationId": "bridgeAsset",
-        "deprecated": false
+        "deprecated": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fromChainId": {
+                    "type": "number",
+                    "description": "ID of the source chain (e.g., 1 for Ethereum, 42161 for Arbitrum, 8453 for Base)",
+                    "example": 42161
+                  },
+                  "toChainId": {
+                    "type": "number",
+                    "description": "ID of the destination chain (e.g., 8453 for Base, 42161 for Arbitrum, 1 for Ethereum)",
+                    "example": 8453
+                  },
+                  "fromTokenAddress": {
+                    "type": "string",
+                    "description": "Address of the token to swap from (use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE for native tokens like ETH, MATIC)",
+                    "example": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+                  },
+                  "toTokenAddress": {
+                    "type": "string",
+                    "description": "Address of the token to swap to (use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE for native tokens)",
+                    "example": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+                  },
+                  "amount": {
+                    "type": "string",
+                    "description": "Amount of tokens to swap in human-readable format (e.g., '0.5', '1.0')",
+                    "example": "0.1"
+                  },
+                  "toAddress": {
+                    "type": "string",
+                    "description": "Wallet address that will receive the assets (optional)",
+                    "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
+                  },
+                  "confirmed": {
+                    "type": "boolean",
+                    "description": "Whether the transaction is confirmed (default: false, returns confirmation URL)",
+                    "example": false,
+                    "default": false
+                  }
+                },
+                "required": ["fromChainId", "toChainId", "fromTokenAddress", "toTokenAddress", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bridge transaction response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": ["pending_confirmation", "success", "failed"],
+                      "example": "pending_confirmation"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "confirmationUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "transactionId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/mcp/portfolio": {
       "post": {
         "description": "Get wallet portfolio (balances across multiple chains) using thirdweb SDK",
         "operationId": "getPortfolio",
-        "deprecated": false
+        "deprecated": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "Wallet address to check balances for",
+                    "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
+                  },
+                  "chainIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "description": "Array of chain IDs to check (e.g., [1, 137, 8453]). If not provided, checks all supported chains",
+                    "example": [1, 137, 8453]
+                  },
+                  "tokenAddresses": {
+                    "type": "object",
+                    "description": "Optional: Object mapping chainId to array of ERC20 token addresses to check"
+                  }
+                },
+                "required": ["address"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Portfolio data"
+          }
+        }
       }
     },
     "/api/mcp/wallet-balance": {
       "post": {
         "description": "Get wallet balance for a specific token (native or ERC20) on a specific chain using thirdweb SDK",
         "operationId": "getWalletBalance",
-        "deprecated": false
+        "deprecated": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "Wallet address to check balance for",
+                    "example": "0xebf3e11713079039b2cfba51a4dba8092e1480b6"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Alternative parameter name for walletAddress"
+                  },
+                  "chain": {
+                    "type": "string",
+                    "description": "Chain name (e.g., 'ethereum', 'base', 'polygon') or chainId (number)",
+                    "example": "ethereum"
+                  },
+                  "chainId": {
+                    "type": "number",
+                    "description": "Chain ID (e.g., 1 for Ethereum, 8453 for Base)",
+                    "example": 1
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "Token symbol (e.g., 'ETH', 'MATIC') or token address for ERC20",
+                    "example": "ETH"
+                  },
+                  "tokenAddress": {
+                    "type": "string",
+                    "description": "ERC20 token address (optional, for native tokens use token symbol)"
+                  }
+                },
+                "required": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet balance response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "walletAddress": {
+                      "type": "string"
+                    },
+                    "balance": {
+                      "type": "string",
+                      "example": "1.5"
+                    },
+                    "tokenSymbol": {
+                      "type": "string",
+                      "example": "ETH"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/privacy-policy": {
+      "get": {
+        "description": "Get privacy policy information",
+        "operationId": "getPrivacyPolicy",
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "Privacy policy data"
+          }
+        }
       }
     }
   },
