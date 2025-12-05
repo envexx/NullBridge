@@ -80,7 +80,7 @@ Frontend page for manual transaction confirmation. Users review transaction deta
 ```bash
 # Clone the repository
 git clone https://github.com/envexx/NullBridge.git
-cd NullBridge/mcp-aura
+cd NullBridge
 
 # Install dependencies
 npm install

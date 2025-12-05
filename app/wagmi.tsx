@@ -5,12 +5,30 @@ import { useState } from 'react';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiConfig } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { 
+  mainnet, 
+  sepolia,
+  arbitrum,
+  base,
+  optimism,
+  polygon,
+  arbitrumSepolia,
+  baseSepolia,
+} from 'wagmi/chains';
 
 export const config = getDefaultConfig({
   appName: 'NullBridge MCP',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-walletconnect-project-id-for-testing',
-  chains: [mainnet, sepolia],
+  chains: [
+    mainnet,
+    arbitrum,
+    base,
+    optimism,
+    polygon,
+    sepolia,
+    arbitrumSepolia,
+    baseSepolia,
+  ],
   ssr: true,
 });
 

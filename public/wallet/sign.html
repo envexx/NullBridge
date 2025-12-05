@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Transaction - ENVXX MCP AURA</title>
+    <title>Sign Transaction - NullBridge MCP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@4.0.4/dist/index.umd.js"></script>
@@ -129,7 +129,7 @@
                         Action ID: <span id="action-id" class="font-mono">Loading...</span>
                     </p>
                     <p class="text-xs text-gray-500 mt-1">
-                        Secure signing powered by ENVXX MCP AURA
+                        Secure signing powered by NullBridge MCP
                     </p>
                 </div>
             </div>
@@ -175,8 +175,8 @@
 
                     case 'coinbase':
                         const coinbaseWalletSDK = new CoinbaseWalletSDK({
-                            appName: 'ENVXX MCP AURA',
-                            appLogoUrl: 'https://mcp-aura.vercel.app/favicon.ico',
+                            appName: 'NullBridge MCP',
+                            appLogoUrl: 'https://null-bridge.vercel.app/favicon.ico',
                             darkMode: false
                         });
                         const coinbaseProvider = coinbaseWalletSDK.makeWeb3Provider('https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', 1);

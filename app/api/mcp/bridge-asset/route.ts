@@ -1,6 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { performCrossChainSwap, getChainById, executeConfirmedSwap } from '@/app/lib/bridge-agent';
 
+// Helper function to serialize BigInt values in objects
+function serializeBigInt(obj: any): any {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  
+  if (typeof obj === 'bigint') {
+    return obj.toString();
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(serializeBigInt);
+  }
+  
+  if (typeof obj === 'object') {
+    const serialized: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      serialized[key] = serializeBigInt(value);
+    }
+    return serialized;
+  }
+  
+  return obj;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -35,7 +60,22 @@ export async function POST(request: NextRequest) {
         toAddress
       );
 
-      if (result.status === "success") {
+      // executeConfirmedSwap returns "prepared" status with steps/transactions
+      // The actual execution happens on the frontend using user's wallet
+      if (result.status === "prepared" && result.steps && result.transactions) {
+        // Serialize BigInt values before sending response
+        const serializedSteps = serializeBigInt(result.steps);
+        const serializedTransactions = serializeBigInt(result.transactions);
+        
+        return NextResponse.json({
+          status: "success", // Changed to "success" for frontend compatibility
+          message: "Bridge transaction prepared successfully. Please execute using your wallet on the confirmation page.",
+          steps: serializedSteps,
+          transactions: serializedTransactions,
+          transactionId: result.transactionId,
+          instructions: "The transaction has been prepared. Use the steps and transactions data to execute via your connected wallet."
+        });
+      } else if (result.status === "success") {
         const explorerUrl = fromChain.explorerUrl
           ? `${fromChain.explorerUrl}/tx/${result.transactionId}`
           : `https://etherscan.io/tx/${result.transactionId}`;
@@ -49,8 +89,9 @@ export async function POST(request: NextRequest) {
       } else {
         return NextResponse.json({
           status: "failed",
-          error: result.error,
-          message: "Cross-chain swap failed to execute."
+          error: result.error || "Failed to prepare bridge transaction",
+          message: "Cross-chain swap failed to execute.",
+          details: result
         }, { status: 500 });
       }
     } else {

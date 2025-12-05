@@ -73,11 +73,29 @@ export async function performCrossChainSwap(
       quote: quote,
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Cross-chain swap failed:", error);
+    
+    // Handle specific thirdweb errors
+    let errorMessage = "Unknown error during swap.";
+    
+    if (error?.code === 'INVALID_INPUT' || error?.message?.includes('route not found')) {
+      errorMessage = `Bridge route not available for ${fromChain?.name || fromChainId} → ${toChain?.name || toChainId}. ` +
+        `This route may not be supported by thirdweb. Try using mainnet chains (Ethereum, Base, Arbitrum) or different token pairs.`;
+    } else if (error?.code === 'UNAUTHORIZED' || error?.statusCode === 401) {
+      errorMessage = "Authentication failed. Please check THIRDWEB_CLIENT_ID is set correctly in environment variables.";
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     return {
       status: "failed",
-      error: error instanceof Error ? error.message : "Unknown error during swap.",
+      error: errorMessage,
+      details: error?.code || error?.statusCode ? {
+        code: error.code,
+        statusCode: error.statusCode,
+        correlationId: error.correlationId,
+      } : undefined,
     };
   }
 }

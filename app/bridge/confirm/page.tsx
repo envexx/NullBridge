@@ -4,6 +4,9 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { baseURL } from '@/baseUrl';
 import { getChainById } from '@/app/lib/bridge-agent';
+import { useAccount, useChainId, useSwitchChain, useSendTransaction, useWaitForTransactionReceipt, useConnect } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { parseEther } from 'viem';
 
 interface SwapConfirmationProps {
   fromChainId: number;
@@ -14,13 +17,17 @@ interface SwapConfirmationProps {
   toAddress?: string;
 }
 
+
 function BridgeConfirmContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [transactionId, setTransactionId] = useState<string | null>(null);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [explorerUrl, setExplorerUrl] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState<string>('');
+  const [steps, setSteps] = useState<any[]>([]);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   const fromChainId = parseInt(searchParams.get('fromChainId') || '0');
   const toChainId = parseInt(searchParams.get('toChainId') || '0');
@@ -31,13 +38,91 @@ function BridgeConfirmContent() {
 
   const fromChain = getChainById(fromChainId);
   const toChain = getChainById(toChainId);
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
+  const { connect, connectors, isPending: isConnecting } = useConnect();
 
+  // Set wallet address from connected account
+  useEffect(() => {
+    if (isConnected && address) {
+      setWalletAddress(address);
+    }
+  }, [isConnected, address]);
+
+  // Connect wallet using wagmi connector
+  const connectWallet = async () => {
+    try {
+      // Find MetaMask or injected connector
+      const injectedConnector = connectors.find(
+        (c) => c.id === 'injected' || c.id === 'metaMask'
+      );
+      
+      if (injectedConnector) {
+        await connect({ connector: injectedConnector });
+      } else if (connectors.length > 0) {
+        // Use first available connector
+        await connect({ connector: connectors[0] });
+      } else {
+        setError('No wallet connectors available. Please install MetaMask or another compatible wallet.');
+      }
+    } catch (err: any) {
+      setError(`Failed to connect wallet: ${err.message}`);
+    }
+  };
+
+  const { sendTransactionAsync } = useSendTransaction();
+  const { switchChainAsync } = useSwitchChain();
+
+  // Execute a single transaction step using wagmi
+  const executeTransactionStep = async (step: any) => {
+    if (!step.transaction) {
+      throw new Error('Invalid transaction step: missing transaction data');
+    }
+
+    const { to, data, value, chainId: stepChainId } = step.transaction;
+
+    // Switch chain if needed
+    if (stepChainId && stepChainId !== chainId) {
+      setCurrentStep(`Switching to chain ${stepChainId}...`);
+      await switchChainAsync({ chainId: stepChainId });
+      // Wait a bit for chain switch
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    setCurrentStep(`Executing ${step.action || 'transaction'}...`);
+
+    // Send transaction using wagmi
+    // Convert value to BigInt if it's a string
+    const valueBigInt = typeof value === 'string' ? BigInt(value) : BigInt(value || '0');
+    
+    const txHash = await sendTransactionAsync({
+      to: to as `0x${string}`,
+      data: data as `0x${string}`,
+      value: valueBigInt,
+    });
+
+    setCurrentStep(`Waiting for confirmation...`);
+    
+    return {
+      hash: txHash,
+    };
+  };
+
+  // Execute bridge swap
   const executeSwap = async () => {
+    if (!isConnected || !address) {
+      setError('Please connect your wallet first');
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setCurrentStep('Preparing bridge transaction...');
 
     try {
-      const response = await fetch(`${baseURL}/api/mcp/bridge-asset`, {
+      // Step 1: Get prepared steps from API
+      const prepareResponse = await fetch(`${baseURL}/api/mcp/bridge-asset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,22 +133,80 @@ function BridgeConfirmContent() {
           fromTokenAddress,
           toTokenAddress,
           amount,
-          toAddress: toAddress || undefined,
+          toAddress: toAddress || address,
           confirmed: true,
         }),
       });
 
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        setSuccess(true);
-        setTransactionId(result.transactionId);
-        setExplorerUrl(result.explorerUrl);
-      } else {
-        setError(result.error || 'Failed to execute swap');
+      if (!prepareResponse.ok) {
+        const errorData = await prepareResponse.json();
+        throw new Error(errorData.error || `HTTP ${prepareResponse.status}: ${prepareResponse.statusText}`);
       }
+
+      const prepareResult = await prepareResponse.json();
+
+      if (prepareResult.status !== 'success' || !prepareResult.steps || !prepareResult.transactions) {
+        throw new Error(prepareResult.error || 'Failed to prepare bridge transaction');
+      }
+
+      setSteps(prepareResult.steps);
+
+      // Step 2: Verify wallet is connected (already checked at start)
+      if (!address) {
+        throw new Error('Wallet not connected');
+      }
+
+      // Step 3: Execute each transaction step using wagmi
+      const executedTransactions: any[] = [];
+      
+      // Execute transactions from steps
+      // Each step may contain multiple transactions
+      for (let i = 0; i < prepareResult.steps.length; i++) {
+        const step = prepareResult.steps[i];
+        setCurrentStep(`Step ${i + 1}/${prepareResult.steps.length}: ${step.action || 'Processing'}...`);
+        
+        // Execute each transaction in the step
+        if (step.transactions && Array.isArray(step.transactions)) {
+          for (const tx of step.transactions) {
+            const result = await executeTransactionStep({
+              transaction: tx,
+              action: step.action,
+            });
+            executedTransactions.push(result);
+            
+            // Wait a bit between transactions
+            await new Promise(resolve => setTimeout(resolve, 3000));
+          }
+        } else if (step.transaction) {
+          // Single transaction in step
+          const result = await executeTransactionStep(step);
+          executedTransactions.push(result);
+          
+          // Wait a bit between steps
+          if (i < prepareResult.steps.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+          }
+        }
+      }
+
+      // Step 4: Get the last transaction hash
+      const lastTx = executedTransactions[executedTransactions.length - 1];
+      const finalTxHash = lastTx.hash;
+
+      setTransactionHash(finalTxHash);
+      setSuccess(true);
+      setCurrentStep('Transaction completed successfully!');
+
+      // Generate explorer URL
+      const chain = getChainById(fromChainId);
+      if (chain && chain.explorerUrl) {
+        setExplorerUrl(`${chain.explorerUrl}/tx/${finalTxHash}`);
+      }
+
     } catch (err: any) {
+      console.error('Error during swap execution:', err);
       setError(err.message || 'An error occurred while executing the swap');
+      setCurrentStep('');
     } finally {
       setLoading(false);
     }
@@ -98,10 +241,10 @@ function BridgeConfirmContent() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-green-600 mb-4">Transaction Submitted Successfully!</h2>
-            {transactionId && (
+            {transactionHash && (
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <p className="text-sm text-gray-600 mb-2">Transaction ID:</p>
-                <p className="text-sm font-mono text-gray-900 break-all">{transactionId}</p>
+                <p className="text-sm text-gray-600 mb-2">Transaction Hash:</p>
+                <p className="text-sm font-mono text-gray-900 break-all">{transactionHash}</p>
               </div>
             )}
             {explorerUrl && (
@@ -146,6 +289,12 @@ function BridgeConfirmContent() {
                     <span className="font-mono text-sm text-gray-900 break-all">{toAddress}</span>
                   </div>
                 )}
+                {walletAddress && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Your Wallet:</span>
+                    <span className="font-mono text-sm text-gray-900 break-all">{walletAddress}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -155,18 +304,78 @@ function BridgeConfirmContent() {
               </div>
             )}
 
+            {currentStep && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p className="text-blue-800">{currentStep}</p>
+              </div>
+            )}
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
               <p className="text-yellow-800 text-sm">
-                ⚠️ Please review the transaction details above carefully. Once you confirm, the transaction will be executed using thirdweb infrastructure.
+                ⚠️ Please review the transaction details above carefully. Once you confirm, the transaction will be executed using your connected wallet.
               </p>
             </div>
 
+            {!isConnected && (
+              <div className="mb-4">
+                <ConnectButton.Custom>
+                  {({
+                    account,
+                    chain,
+                    openAccountModal,
+                    openChainModal,
+                    openConnectModal,
+                    authenticationStatus,
+                    mounted,
+                  }) => {
+                    const ready = mounted && authenticationStatus !== 'loading';
+                    const connected =
+                      ready &&
+                      account &&
+                      chain &&
+                      (!authenticationStatus ||
+                        authenticationStatus === 'authenticated');
+
+                    return (
+                      <div
+                        {...(!ready && {
+                          'aria-hidden': true,
+                          'style': {
+                            opacity: 0,
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                          },
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <button
+                                onClick={openConnectModal}
+                                type="button"
+                                className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                                disabled={isConnecting}
+                              >
+                                {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                              </button>
+                            );
+                          }
+
+                          return null;
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
+              </div>
+            )}
+
             <button
               onClick={executeSwap}
-              disabled={loading}
+              disabled={loading || !isConnected}
               className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Processing...' : 'Confirm and Execute Bridge'}
+              {loading ? (currentStep || 'Processing...') : 'Confirm and Execute Bridge'}
             </button>
           </>
         )}
@@ -191,4 +400,3 @@ export default function BridgeConfirmPage() {
     </Suspense>
   );
 }
-

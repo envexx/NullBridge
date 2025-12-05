@@ -18,9 +18,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "test:bridge": "node scripts/test-simple-bridge.mjs",
-    "test:bridge:ts": "tsx scripts/test-bridge.ts"
+    "start": "next start"
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^4.0.4",

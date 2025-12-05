@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect Wallet - ENVXX MCP AURA</title>
+    <title>Connect Wallet - NullBridge MCP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@4.0.4/dist/index.umd.js"></script>
@@ -72,7 +72,7 @@
 
                 <div class="mt-6 text-center">
                     <p class="text-sm text-gray-500">
-                        Secure connection powered by ENVXX MCP AURA
+                        Secure connection powered by NullBridge MCP
                     </p>
                 </div>
             </div>
@@ -92,8 +92,8 @@
         let coinbaseWalletSDK;
         try {
             coinbaseWalletSDK = new CoinbaseWalletSDK({
-                appName: 'ENVXX MCP AURA',
-                appLogoUrl: 'https://mcp-aura.vercel.app/favicon.ico',
+                appName: 'NullBridge MCP',
+                appLogoUrl: 'https://null-bridge.vercel.app/favicon.ico',
                 darkMode: false
             });
         } catch (error) {
