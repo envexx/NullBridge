@@ -2,420 +2,50 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NullBridge MCP - Cross-Chain Asset Bridge",
-    "description": "Cross-Chain Asset Bridge Agent using thirdweb - Bridge assets across multiple blockchain networks",
-    "version": "1.0.0",
-    "contact": {
-      "name": "ENVXX",
-      "url": "https://github.com/envexx/NullBridge"
-    }
+    "description": "Cross-Chain Asset Bridge Agent using thirdweb - Bridge assets across multiple blockchain networks and check wallet portfolios",
+    "version": "v1.0.0"
   },
   "servers": [
     {
-      "url": "https://nullbridge.vercel.app",
-      "description": "NullBridge MCP Production Server"
+      "url": "https://null-bridge.vercel.app"
     }
   ],
   "paths": {
     "/mcp": {
       "get": {
-        "summary": "MCP Server Info",
         "description": "Get MCP server information and available tools",
         "operationId": "getMCPInfo",
-        "responses": {
-          "200": {
-            "description": "MCP server information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MCPServerInfo"
-                }
-              }
-            }
-          }
-        }
+        "deprecated": false
       },
       "post": {
-        "summary": "Execute MCP Tools",
-        "description": "Execute MCP tools for cross-chain bridge operations using thirdweb",
+        "description": "Execute MCP tools for cross-chain bridge operations and portfolio checking using thirdweb",
         "operationId": "executeMCPTool",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MCPRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Tool execution result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MCPResponse"
-                }
-              }
-            }
-          }
-        }
+        "deprecated": false
       }
     },
     "/api/mcp/bridge-asset": {
       "post": {
-        "summary": "Bridge Asset Across Chains",
         "description": "Bridge/swap assets across different blockchain networks using thirdweb. Returns a confirmation URL for manual transaction confirmation.",
         "operationId": "bridgeAsset",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BridgeAssetRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Bridge transaction result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BridgeAssetResponse"
-                }
-              }
-            }
-          }
-        }
+        "deprecated": false
+      }
+    },
+    "/api/mcp/portfolio": {
+      "post": {
+        "description": "Get wallet portfolio (balances across multiple chains) using thirdweb SDK",
+        "operationId": "getPortfolio",
+        "deprecated": false
+      }
+    },
+    "/api/mcp/wallet-balance": {
+      "post": {
+        "description": "Get wallet balance for a specific token (native or ERC20) on a specific chain using thirdweb SDK",
+        "operationId": "getWalletBalance",
+        "deprecated": false
       }
     }
   },
   "components": {
-    "schemas": {
-      "MCPServerInfo": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "NullBridge MCP"
-          },
-          "version": {
-            "type": "string",
-            "example": "1.0.0"
-          },
-          "description": {
-            "type": "string",
-            "example": "Cross-Chain Asset Bridge Agent using thirdweb"
-          },
-          "tools": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": ["bridge_asset", "get_portfolio", "get_wallet_balance"]
-          }
-        }
-      },
-      "MCPRequest": {
-        "type": "object",
-        "properties": {
-          "method": {
-            "type": "string",
-            "enum": ["tools/call", "resources/read"]
-          },
-          "params": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "arguments": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      },
-      "MCPResponse": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["text", "resource"]
-                },
-                "text": {
-                  "type": "string"
-                },
-                "resource": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "isError": {
-            "type": "boolean"
-          }
-        }
-      },
-      "BridgeAssetRequest": {
-        "type": "object",
-        "properties": {
-          "fromChainId": {
-            "type": "number",
-            "description": "ID of the source chain (e.g., 42161 for Arbitrum, 8453 for Base, 1 for Ethereum)",
-            "example": 42161
-          },
-          "toChainId": {
-            "type": "number",
-            "description": "ID of the destination chain (e.g., 8453 for Base, 42161 for Arbitrum, 1 for Ethereum)",
-            "example": 8453
-          },
-          "fromTokenAddress": {
-            "type": "string",
-            "description": "Address of the token to swap from (use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE for native tokens like ETH, MATIC)",
-            "example": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-          },
-          "toTokenAddress": {
-            "type": "string",
-            "description": "Address of the token to swap to",
-            "example": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-          },
-          "amount": {
-            "type": "string",
-            "description": "Amount of tokens to swap in human-readable format (e.g., '0.5', '1.0')",
-            "example": "0.1"
-          },
-          "toAddress": {
-            "type": "string",
-            "pattern": "^0x[a-fA-F0-9]{40}$",
-            "description": "Wallet address that will receive the assets (optional)",
-            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
-          },
-          "confirmed": {
-            "type": "boolean",
-            "description": "Whether the transaction is confirmed (default: false, returns confirmation URL)",
-            "example": false,
-            "default": false
-          }
-        },
-        "required": ["fromChainId", "toChainId", "fromTokenAddress", "toTokenAddress", "amount"]
-      },
-      "BridgeAssetResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": ["pending_confirmation", "success", "failed"],
-            "description": "Status of the bridge transaction",
-            "example": "pending_confirmation"
-          },
-          "message": {
-            "type": "string",
-            "description": "Human-readable message about the transaction status",
-            "example": "Please confirm the transaction via the confirmation URL."
-          },
-          "confirmationUrl": {
-            "type": "string",
-            "description": "URL for manual transaction confirmation (only when status is pending_confirmation)",
-            "example": "https://nullbridge.vercel.app/bridge/confirm?fromChainId=42161&toChainId=8453&..."
-          },
-          "transactionId": {
-            "type": "string",
-            "description": "Transaction ID from thirdweb (only when status is success)",
-            "example": "tx_abc123"
-          },
-          "transactionHash": {
-            "type": "string",
-            "description": "Blockchain transaction hash (only when status is success)",
-            "example": "0x1234567890abcdef..."
-          },
-          "explorerUrl": {
-            "type": "string",
-            "description": "URL to view transaction on blockchain explorer (only when status is success)",
-            "example": "https://arbiscan.io/tx/0x1234..."
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message (only when status is failed)",
-            "example": "Insufficient balance for transaction"
-          }
-        }
-      },
-      "GetPortfolioRequest": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Wallet address to check balances for",
-            "pattern": "^0x[a-fA-F0-9]{40}$",
-            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
-          },
-          "chainIds": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "description": "Array of chain IDs to check (e.g., [1, 137, 8453]). If not provided, checks all supported chains",
-            "example": [1, 137, 8453]
-          },
-          "tokenAddresses": {
-            "type": "object",
-            "description": "Optional: Object mapping chainId to array of ERC20 token addresses to check",
-            "example": {
-              "1": ["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"],
-              "137": ["0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"]
-            }
-          }
-        },
-        "required": ["address"]
-      },
-      "GetPortfolioResponse": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Wallet address that was checked",
-            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
-          },
-          "balances": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "address": {
-                  "type": "string",
-                  "description": "Token address (native for native tokens)",
-                  "example": "native"
-                },
-                "name": {
-                  "type": "string",
-                  "description": "Token name",
-                  "example": "Ethereum"
-                },
-                "symbol": {
-                  "type": "string",
-                  "description": "Token symbol",
-                  "example": "ETH"
-                },
-                "decimals": {
-                  "type": "number",
-                  "description": "Token decimals",
-                  "example": 18
-                },
-                "displayValue": {
-                  "type": "string",
-                  "description": "Human-readable balance",
-                  "example": "1.5"
-                },
-                "value": {
-                  "type": "string",
-                  "description": "Balance in wei (as string)",
-                  "example": "1500000000000000000"
-                },
-                "chainId": {
-                  "type": "number",
-                  "description": "Chain ID",
-                  "example": 1
-                },
-                "chainName": {
-                  "type": "string",
-                  "description": "Chain name",
-                  "example": "Ethereum Mainnet"
-                }
-              }
-            }
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message if any",
-            "example": "Failed to fetch balance for chain 1"
-          }
-        }
-      },
-      "GetWalletBalanceRequest": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Wallet address to check balance for",
-            "pattern": "^0x[a-fA-F0-9]{40}$",
-            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
-          },
-          "chainId": {
-            "type": "number",
-            "description": "Chain ID to check balance on",
-            "example": 1
-          },
-          "tokenAddress": {
-            "type": "string",
-            "description": "Optional: ERC20 token address. If not provided, returns native token balance",
-            "example": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-          }
-        },
-        "required": ["address", "chainId"]
-      },
-      "GetWalletBalanceResponse": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Wallet address that was checked",
-            "example": "0x742d35Cc6634C0532925a3b8D0b4E4f7E1D4D4f4"
-          },
-          "chainId": {
-            "type": "number",
-            "description": "Chain ID",
-            "example": 1
-          },
-          "chainName": {
-            "type": "string",
-            "description": "Chain name",
-            "example": "Ethereum Mainnet"
-          },
-          "tokenAddress": {
-            "type": "string",
-            "description": "Token address (native for native tokens)",
-            "example": "native"
-          },
-          "tokenName": {
-            "type": "string",
-            "description": "Token name",
-            "example": "Ethereum"
-          },
-          "tokenSymbol": {
-            "type": "string",
-            "description": "Token symbol",
-            "example": "ETH"
-          },
-          "balance": {
-            "type": "string",
-            "description": "Human-readable balance",
-            "example": "1.5"
-          },
-          "value": {
-            "type": "string",
-            "description": "Balance in wei (as string)",
-            "example": "1500000000000000000"
-          },
-          "decimals": {
-            "type": "number",
-            "description": "Token decimals",
-            "example": 18
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message if any",
-            "example": "Failed to fetch balance"
-          }
-        }
-      }
-    }
+    "schemas": {}
   }
 }
