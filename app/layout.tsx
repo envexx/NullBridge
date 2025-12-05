@@ -15,8 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NullBridge MCP - Cross-Chain Asset Bridge",
-  description: "Cross-Chain Asset Bridge Agent using thirdweb - Bridge assets across multiple blockchain networks",
+  title: "NullBridge - Cross-Chain Asset Bridge",
+  description: "Bridge assets across multiple blockchain networks seamlessly using thirdweb infrastructure",
+  icons: {
+    icon: '/nullbridge.png',
+    apple: '/nullbridge.png',
+  },
 };
 
 export default function RootLayout({

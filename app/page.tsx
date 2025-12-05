@@ -77,9 +77,14 @@ export default function Home() {
           
           <div className="text-center">
             <div className="flex items-center justify-center gap-4 mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-2xl">NB</span>
-              </div>
+              <Image
+                src="/nullbridge.png"
+                alt="NullBridge Logo"
+                width={80}
+                height={80}
+                className="rounded-xl"
+                priority
+              />
               <h1 className="text-6xl font-bold text-white tracking-tight">
                 NULLBRIDGE
               </h1>
@@ -90,22 +95,23 @@ export default function Home() {
                 Cross-Chain Asset Bridge
               </p>
               <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                Bridge assets across multiple blockchain networks using thirdweb
+                Seamlessly bridge your assets across Ethereum, Arbitrum, Base, Polygon, and Optimism. Powered by thirdweb infrastructure for secure, fast, and reliable cross-chain transfers.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link
-                href="/portfolio"
+                href="/chatbot"
                 className="px-8 py-3 bg-white text-black rounded-lg hover:bg-gray-100 transition-all duration-300 flex items-center gap-2 justify-center font-semibold border border-gray-300"
               >
-                Analyze Portfolio
+                <MessageSquare className="w-5 h-5" />
+                Start Bridging
               </Link>
               <Link
-                href="/strategy"
+                href="/portfolio"
                 className="px-8 py-3 bg-transparent border border-white text-white rounded-lg hover:bg-white hover:text-black transition-all duration-300 flex items-center gap-2 justify-center font-semibold"
               >
-                Get Strategies
+                View Portfolio
               </Link>
             </div>
 
@@ -122,113 +128,110 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-white mb-4">
-            DeFi Automation Suite
+            Cross-Chain Bridge Features
           </h2>
           <p className="text-lg text-gray-400">
-            Everything you need for intelligent portfolio management
+            Secure, fast, and reliable asset bridging across multiple blockchain networks
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-          {/* Portfolio Analysis */}
+          {/* Multi-Chain Support */}
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="text-black font-bold">P</span>
+              <span className="text-black font-bold text-xl">🌉</span>
             </div>
             <h3 className="text-xl font-semibold text-white mb-3">
-              Portfolio Analysis
+              Multi-Chain Support
             </h3>
             <p className="text-gray-400 mb-4 flex-grow">
-              Multi-chain portfolio tracking with real-time balances, token prices, and DeFi positions.
-            </p>
-            <Link
-              href="/portfolio"
-              className="text-white hover:text-gray-300 flex items-center gap-1 font-medium mt-auto"
-            >
-              Analyze →
-            </Link>
-          </div>
-
-          {/* AI Strategy Recommendations */}
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
-            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="text-black font-bold">S</span>
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-3">
-              AI Strategy Recommendations
-            </h3>
-            <p className="text-gray-400 mb-4 flex-grow">
-              Bridge assets across chains with thirdweb infrastructure for seamless cross-chain operations.
-            </p>
-            <Link
-              href="/strategy"
-              className="text-white hover:text-gray-300 flex items-center gap-1 font-medium mt-auto"
-            >
-              Get strategies →
-            </Link>
-          </div>
-
-          {/* One-Click Execution */}
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
-            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="text-black font-bold">E</span>
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-3">
-              One-Click Execution
-            </h3>
-            <p className="text-gray-400 mb-4 flex-grow">
-              Execute swaps, stakes, bridges, and transfers directly from chat with wallet integration.
-            </p>
-            <div className="text-gray-500 font-medium mt-auto">
-              Coming soon
-            </div>
-          </div>
-
-          {/* Yield Optimization */}
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
-            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="text-black font-bold">Y</span>
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-3">
-              Yield Optimization
-            </h3>
-            <p className="text-gray-400 mb-4 flex-grow">
-              Maximize returns with intelligent yield farming recommendations and automated position management.
+              Bridge assets across Ethereum, Arbitrum, Base, Polygon, and Optimism with a single interface.
             </p>
             <div className="text-green-400 font-medium mt-auto">
               Active
             </div>
           </div>
 
-          {/* Security First */}
+          {/* Fast & Secure */}
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="text-black font-bold">S</span>
+              <span className="text-black font-bold text-xl">⚡</span>
             </div>
             <h3 className="text-xl font-semibold text-white mb-3">
-              Security First
+              Fast & Secure
             </h3>
             <p className="text-gray-400 mb-4 flex-grow">
-              Non-custodial design with transaction simulation, slippage protection, and multi-signature support.
+              Powered by thirdweb infrastructure for secure, fast, and reliable cross-chain transfers with minimal slippage.
             </p>
             <div className="text-green-400 font-medium mt-auto">
               Built-in
             </div>
           </div>
 
-          {/* Cross-Chain Support */}
+          {/* Native & ERC20 Tokens */}
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="text-black font-bold">C</span>
+              <span className="text-black font-bold text-xl">🪙</span>
             </div>
             <h3 className="text-xl font-semibold text-white mb-3">
-              Cross-Chain Support
+              Native & ERC20 Tokens
             </h3>
             <p className="text-gray-400 mb-4 flex-grow">
-              Seamless operations across Ethereum, Arbitrum, Polygon with unified bridge and swap recommendations.
+              Bridge native tokens (ETH, MATIC, etc.) and ERC20 tokens across supported chains seamlessly.
             </p>
             <div className="text-green-400 font-medium mt-auto">
-              Multi-chain
+              Supported
+            </div>
+          </div>
+
+          {/* Wallet Integration */}
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <span className="text-black font-bold text-xl">🔗</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-3">
+              Wallet Integration
+            </h3>
+            <p className="text-gray-400 mb-4 flex-grow">
+              Connect with MetaMask, Coinbase Wallet, WalletConnect, and more. Non-custodial - you control your keys.
+            </p>
+            <div className="text-green-400 font-medium mt-auto">
+              Available
+            </div>
+          </div>
+
+          {/* Portfolio Tracking */}
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <span className="text-black font-bold text-xl">📊</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-3">
+              Portfolio Tracking
+            </h3>
+            <p className="text-gray-400 mb-4 flex-grow">
+              Track your assets across all chains with real-time balance updates and transaction history.
+            </p>
+            <Link
+              href="/portfolio"
+              className="text-white hover:text-gray-300 flex items-center gap-1 font-medium mt-auto"
+            >
+              View Portfolio →
+            </Link>
+          </div>
+
+          {/* MCP Integration */}
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all flex flex-col h-full">
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <span className="text-black font-bold text-xl">🤖</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-3">
+              MCP Integration
+            </h3>
+            <p className="text-gray-400 mb-4 flex-grow">
+              Use with ChatGPT and other AI assistants via Model Context Protocol for intelligent bridge operations.
+            </p>
+            <div className="text-green-400 font-medium mt-auto">
+              Available
             </div>
           </div>
         </div>
@@ -239,36 +242,29 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
-              MCP API Integration
+              Supported Networks
             </h2>
             <p className="text-lg text-gray-400">
-              RESTful APIs ready for ChatGPT, Claude, and other AI assistants
+              Bridge assets between these blockchain networks
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-black border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Available Endpoints</h3>
-              <div className="space-y-3 text-sm font-mono">
-                <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-gray-600 text-white rounded text-xs font-semibold">POST</span>
-                  <code className="text-gray-300">/api/mcp/bridge-asset</code>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {[
+              { name: 'Ethereum', chainId: 1, color: 'bg-blue-500' },
+              { name: 'Arbitrum', chainId: 42161, color: 'bg-blue-600' },
+              { name: 'Base', chainId: 8453, color: 'bg-blue-400' },
+              { name: 'Polygon', chainId: 137, color: 'bg-purple-500' },
+              { name: 'Optimism', chainId: 10, color: 'bg-red-500' },
+            ].map((chain) => (
+              <div key={chain.chainId} className="bg-black border border-gray-700 rounded-xl p-4 text-center">
+                <div className={`w-12 h-12 ${chain.color} rounded-lg mx-auto mb-3 flex items-center justify-center`}>
+                  <span className="text-white font-bold text-sm">{chain.name[0]}</span>
                 </div>
+                <h3 className="text-sm font-semibold text-white mb-1">{chain.name}</h3>
+                <p className="text-xs text-gray-400">Chain ID: {chain.chainId}</p>
               </div>
-            </div>
-
-            <div className="bg-black border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">MCP Tools</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div>
-                    <code className="font-semibold text-white">bridge_asset</code>
-                    <span className="text-gray-400 ml-2">- Cross-chain asset bridge</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -277,10 +273,10 @@ export default function Home() {
       <div className="bg-white py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-black mb-4">
-            Ready to Optimize Your DeFi Portfolio?
+            Ready to Bridge Your Assets?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Connect your wallet and bridge assets across multiple blockchain networks
+            Connect your wallet and start bridging assets across multiple blockchain networks in seconds
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
