@@ -39,6 +39,25 @@ export function getChainById(chainId: number): ChainInfo | undefined {
   return CHAIN_MAP[chainId];
 }
 
+// Chain name to ID mapping
+const CHAIN_NAME_MAP: { [key: string]: number } = {
+  'ethereum': 1,
+  'optimism': 10,
+  'polygon': 137,
+  'arbitrum': 42161,
+  'base': 8453,
+  'sepolia': 11155111,
+  'optimism-sepolia': 11155420,
+  'polygon-amoy': 80002,
+  'arbitrum-sepolia': 421614,
+  'base-sepolia': 84532,
+};
+
+export function getChainIdFromName(chainName: string): number | null {
+  const normalized = chainName.toLowerCase().replace(/\s+/g, '-');
+  return CHAIN_NAME_MAP[normalized] || null;
+}
+
 export interface TokenBalance {
   address: string;
   name: string;
